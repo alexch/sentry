@@ -5,7 +5,10 @@ Bundler.setup :development
 require 'rake'
 require 'spec/rake/spectask'
 
-require "setup"
+here = File.expand_path(File.dirname(__FILE__))
+require "#{here}/setup"
+
+task :default => :spec
 
 desc "run the app"
 task :run do

@@ -1,12 +1,17 @@
 class Check
-  attr_accessor :state
+  attr_accessor :outcome
 
   def initialize
-    @state = :pending
+    @outcome = :pending
   end
 
   def success!
-    @state = :success
+    @outcome = :success
+  end
+
+  def failure!
+    @outcome = :failure
+    Exceptional::Catcher.handle(CheckFailed.new(to_s))
   end
 
   def run

@@ -8,7 +8,7 @@ require 'bundler'
 Bundler.setup
 
 require 'dm-core'
-
+require 'exceptional'
 
 # class aliases
 #Widget = Erector::Widget
