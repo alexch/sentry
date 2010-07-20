@@ -2,6 +2,24 @@ here = File.expand_path(File.dirname(__FILE__))
 require "#{here}/spec_helper"
 
 describe Check do
+  class Win < Check
+    def run
+      # no news is good news
+    end
+  end
+
+  class Lose < Check
+    def run
+      raise "FTL"
+    end
+  end
+
+  class Fail < Check
+    def run
+      failure! "epic fail"
+    end
+  end
+
   attr_reader :check
   
   before do
@@ -12,14 +30,43 @@ describe Check do
     check.outcome.should == :pending
   end
 
-  it "succeeds" do
-    check.success!
-    check.outcome.should == :success
+  describe '#success!' do
+    it "succeeds" do
+      check.success!
+      check.outcome.should == :success
+    end
   end
 
   describe '#run' do
     it "raises an exception if left undefined" do
       lambda {Check.new.run}.should raise_error(NotImplementedError)
+    end
+  end
+
+  describe '#run!' do
+    it "calls run" do
+      check.should_receive(:run)
+      check.run!
+    end
+
+    it "allows success" do
+      check = Win.new
+      check.run!
+      check.outcome.should == :success
+    end
+
+    it "catches exceptions" do
+      check = Lose.new
+      check.run!
+      check.outcome.should == :failure
+      check.reason.should == "FTL"
+    end
+
+    it "lets run call failure" do
+      check = Fail.new
+      check.run!
+      check.outcome.should == :failure
+      check.reason.should == "epic fail"
     end
   end
 
@@ -83,7 +130,6 @@ describe Check do
   describe "#to_s" do
 
     class Sample < Check
-
     end
 
     it "contains the class name" do

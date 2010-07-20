@@ -14,4 +14,5 @@ group :development do
   gem "dm-sqlite-adapter"
   gem "rake"
   gem "rspec"
+  gem "rack-test"
 end

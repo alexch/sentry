@@ -9,9 +9,10 @@ Bundler.setup
 
 require 'dm-core'
 require 'exceptional'
+require 'erector'
 
 # class aliases
-#Widget = Erector::Widget
+Widget = Erector::Widget
 
 # Thanks http://jacobrothstein.com/delayed-job-send-later-with-run-at
 class Object

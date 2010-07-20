@@ -20,6 +20,15 @@ class Check
     Exceptional::Catcher.handle(CheckFailed.new(to_s))
   end
 
+  def run!
+    begin
+      run
+      success! if @outcome == :pending
+    rescue Exception => e
+      failure!(e)
+    end
+  end
+  
   def run
     raise NotImplementedError
   end
