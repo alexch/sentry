@@ -30,10 +30,10 @@ describe Check do
     check.outcome.should == :pending
   end
 
-  describe '#success!' do
+  describe '#ok!' do
     it "succeeds" do
-      check.success!
-      check.outcome.should == :success
+      check.ok!
+      check.outcome.should == :ok
     end
   end
 
@@ -49,10 +49,10 @@ describe Check do
       check.run!
     end
 
-    it "allows success" do
+    it "allows ok" do
       check = Win.new
       check.run!
-      check.outcome.should == :success
+      check.outcome.should == :ok
     end
 
     it "catches exceptions" do

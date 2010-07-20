@@ -30,11 +30,12 @@ describe Fetch do
   end
 
   describe '#run' do
-    it "calls #failure! on failure" do
+    it "tries to connect to host" do
       @check[:host] = "localhost:9876"
-      @check.run
-      @check.outcome.should == :failure
-      @check.to_s.should include("couldn't connect to host")
+      lambda do
+        @check.run
+      end.should raise_error(Patron::ConnectionFailed)
+      # in the app, run! will call run and catch the exception
     end
   end
 

@@ -10,10 +10,6 @@ class Fetch < Check
     session.timeout = self[:timeout]
     session.base_url = self[:host]
 #    session.headers['User-Agent'] = 'myapp/1.0'
-    begin
-      response = session.get(self[:path])
-    rescue Exception => e
-      failure!(e)
-    end
+    response = session.get(self[:path])
   end
 end

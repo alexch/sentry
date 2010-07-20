@@ -10,8 +10,8 @@ class Check
     end
   end
 
-  def success!
-    @outcome = :success
+  def ok!
+    @outcome = :ok
   end
 
   def failure!(reason = nil)
@@ -23,7 +23,7 @@ class Check
   def run!
     begin
       run
-      success! if @outcome == :pending
+      ok! if @outcome == :pending
     rescue Exception => e
       failure!(e)
     end
