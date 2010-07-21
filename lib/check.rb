@@ -60,6 +60,24 @@ class Check
     raise NotImplementedError, "Please implement #{self.class}#run"
   end
 
+  class Runner
+    def initialize(check_id)
+      @check_id = check_id
+    end
+
+    def perform
+      check = Check.get(@check_id)
+      check.run!
+    end
+  end
+
+  # todo: test (independently of countdown_spec)
+  def run_in(time)
+    Delayed::Job.enqueue(Runner.new(id), 0, time.from_now)
+  end
+
+  #todo: run_at
+
 #  def params
 #    frozen_params = attribute_get(:params).dup
 #    frozen_params.instance_eval do
@@ -73,9 +91,9 @@ class Check
   def param(* args)
     if args.length == 2
       key, value = args
-      x = attribute_get(:params)
-      x[key.to_s] = value
-      attribute_set(:params, x)
+      new_params = attribute_get(:params).dup # need to dup so DM knows it's dirty
+      new_params[key.to_s] = value
+      attribute_set(:params, new_params)
     elsif args.length == 1
       key = args.first
       attribute_get(:params)[key.to_s]

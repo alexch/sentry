@@ -131,6 +131,13 @@ describe Check do
       check.params.should == {"foo" => "bar"}
       check.param(:foo).should == "bar"
     end
+
+    it "sets dirtiness" do
+      @check = Check.new(:params => {:foo => "bar"})
+      @check.save
+      @check.param(:foo, "baz")
+      @check.should be_dirty
+    end
   end
 
   describe "#to_s" do

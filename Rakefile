@@ -29,3 +29,7 @@ namespace :jobs do
   task :work => :setup_app
   task :clear => :setup_app
 end
+
+task :console do
+  system "irb -r console.rb"
+end

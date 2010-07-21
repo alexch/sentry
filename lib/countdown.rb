@@ -1,14 +1,14 @@
 class Countdown < Check
+
   def run
     secs = param("sec").to_i
-    puts "secs=#{secs}"
     if secs == 0
       Check::OK
     else
+      save unless id
       secs -= 1
       param("sec", secs)
-      send_in 1, :run!
-      puts "just queued up a send: #{Delayed::Job.count}"
+      run_in(1.second)
       Check::PENDING
     end
   end

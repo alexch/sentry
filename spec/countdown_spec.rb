@@ -15,7 +15,8 @@ describe Countdown do
     check.outcome.should == Check::PENDING
     check.param("sec").should == 9
     job = Delayed::Job.last
-    job.handler.should include("Countdown")
-    job.run_at.should be_close(Time.now + 1, 0.01)
+    job.run_at.should be_close(Time.now + 1, 0.1)
+    job.invoke_job
+    check.reload.param("sec").should == 8
   end
 end
