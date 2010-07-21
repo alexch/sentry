@@ -22,11 +22,10 @@ Spec::Rake::SpecTask.new do |spec|
 end
 
 task :setup_app do
-  DataMapper.setup(:default, 'sqlite:///db/sentry_dev.db')
+  DataMapper.setup(:default, ENV['DATABASE_URL'] || 'sqlite:///db/sentry_dev.db')
 end
 
 namespace :jobs do
   task :work => :setup_app
   task :clear => :setup_app
 end
-
