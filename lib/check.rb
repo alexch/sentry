@@ -6,20 +6,34 @@ class Check
 
   include DataMapper::Resource
 
-  property :id,         Serial
-  property :type,       Discriminator
+  property :id, Serial
+  property :type, Discriminator
   property :created_at, DateTime
-  property :outcome,    String, :length => 25
-  property :reason,     Text
-  property :params,     Object, :writer => :private
+  property :outcome, String, :length => 25
+  property :reason, Text
+  property :params, Object
 
-  def initialize(params = {})
-    self.outcome = Check::PENDING
-    self.reason = nil
-    self.params = {}
-    params.each_pair do |key, value|
-      self[key] = value # do them one at a time to get the symbol-to-string conversion
+  def convert_to_string_keys(hash)
+    out = {}
+    hash.each_pair do |key, value|
+      # do them one at a time to get symbol-to-string conversion
+      out[key.to_s] = value
     end
+    out
+  end
+
+  def defaults
+    {:outcome => Check::PENDING}
+  end
+
+  def default_params
+    {}
+  end
+
+  def initialize(attributes={}, & block)
+    attributes = defaults.merge(convert_to_string_keys(attributes))
+    attributes["params"] = default_params.merge(convert_to_string_keys(attributes["params"] || {}))
+    super(attributes, &block)
   end
 
   def ok!
@@ -41,27 +55,36 @@ class Check
     end
     save
   end
-  
+
   def run
     raise NotImplementedError
   end
 
-  def params
-    frozen_params = attribute_get(:params).dup
-    frozen_params.instance_eval do
-      def []=(key, value)
-        raise "Sorry, but you can't modify the params object directly. Try check[#{key}]=#{value.inspect} instead."
-      end
+#  def params
+#    frozen_params = attribute_get(:params).dup
+#    frozen_params.instance_eval do
+#      def []=(key, value)
+#        raise "Sorry, but you can't modify the params object directly. Try check[#{key}]=#{value.inspect} instead."
+#      end
+#    end
+#    frozen_params
+#  end
+
+  def param(* args)
+    if args.length == 2
+      key, value = args
+      x = attribute_get(:params)
+      x[key.to_s] = value
+      attribute_set(:params, x)
+    elsif args.length == 1
+      key = args.first
+      attribute_get(:params)[key.to_s]
+    else
+      raise ArgumentError, "param takes either one (for get) or two (for set) arguments"
     end
-    frozen_params
   end
 
-  def [](key)
-    attribute_get(:params)[key.to_s]
-  end
-
-  def []=(key, value)
-    attribute_get(:params)[key.to_s] = value
+  def set(key, value)
   end
 
   def to_s

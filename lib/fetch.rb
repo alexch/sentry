@@ -2,24 +2,24 @@ require 'net/http'
 require 'uri'
 
 class Fetch < Check
-  def initialize(options = {})
-    super({:url => "http://example.com/"}.merge(options))
+  def default_params
+    super.merge({"url" => "http://example.com/"})
   end
 
-  def url
-    @url ||= URI.parse(self[:url])
+  def parsed_url
+    @parsed_url ||= URI.parse(self.param(:url))
   end
 
   def host
-    url.host
+    parsed_url.host
   end
 
   def port
-    url.port
+    parsed_url.port
   end
 
   def path
-    url.path == "" ? "/" : url.path
+    parsed_url.path == "" ? "/" : parsed_url.path
   end
 
   def run

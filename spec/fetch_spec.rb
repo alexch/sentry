@@ -12,18 +12,19 @@ describe Fetch do
 
   describe "params" do
     it "has defaults" do
-      @check[:url].should == "http://example.com/"
+      @check.param(:url).should == "http://example.com/"
     end
 
     it "can override defaults" do
-      @check = Fetch.new(:url => "http://google.com/")
-      @check[:url].should == "http://google.com/"
+      @check = Fetch.new(:params => {:url => "http://google.com/"})
+      @check.param(:url).should == "http://google.com/"
     end
+
   end
 
   describe '#run' do
     it "tries to connect to host" do
-      @check[:url] = "http://localhost:9876/"
+      @check.param(:url, "http://localhost:9876/")
       lambda do
         @check.run
       end.should raise_error(Errno::ECONNREFUSED)
@@ -40,7 +41,7 @@ describe Fetch do
     ].each do |a|
       url, host, port, path = a
       it "parses #{url}" do
-        check = Fetch.new(:url => url)
+        check = Fetch.new(:params => {:url => url})
         check.host.should == host
         check.port.should == port
         check.path.should == path

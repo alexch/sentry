@@ -5,7 +5,7 @@ require "sinatra"
 
 ENV['RACK_ENV'] = ENV['RAILS_ENV'] =  'test'
 
-DataMapper::Logger.new($stdout, :debug)
+DataMapper::Logger.new(Pathname.new("#{ROOT}/log/test.log"), :debug)
 DataMapper.setup(:default, 'sqlite::memory:')
 DataMapper.auto_migrate!
 

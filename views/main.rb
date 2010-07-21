@@ -24,9 +24,26 @@ td, th { padding: 2px; }
 td.ok { color: green; }
 td.failed { color: red; }
 th { background-color: #EEE; text-align: left; }
+
+div.new { float: right; margin: 0 2em; padding: 1em; border: 2px solid blue; }
       STYLE
     end
 
+    div :class => "new" do
+      form :action => "/check", :method => "post" do
+        input :type => "hidden", :name => "type", :value => "Fetch"
+        table do
+          tr do
+            th "url"
+            td do
+              input :type => "text", :name => "params[url]", :value => "http://www.google.com"
+            end
+          end
+        end
+        input :type => :submit, :value => "Check Now"
+      end
+    end
+    
     h1 "sentry"
 
     table do

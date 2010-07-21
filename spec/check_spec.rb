@@ -106,32 +106,31 @@ describe Check do
     end
 
     it "can get some" do
-      check["foo"] = "bar"
+      check.param("foo", "bar")
       check.params.should == {"foo" => "bar"}
-      check["foo"].should == "bar"
+      check.param("foo").should == "bar"
     end
 
     it "interchanges string and hash keys on set" do
-      check[:foo] = "bar"
+      check.param(:foo, "bar")
       check.params.should == {"foo" => "bar"}
-      check["foo"].should == "bar"
+      check.param("foo").should == "bar"
     end
 
     it "interchanges string and hash keys on get" do
-      check[:foo] = "bar"
-      check[:foo].should == "bar"
+      check.param(:foo, "bar")
+      check.param(:foo).should == "bar"
     end
 
-    it "does not allow setting the live params hash" do
-      lambda do
-        check.params["foo"] = "bar"
-      end.should raise_error
+    it "does allows setting the live params hash" do
+      check.params["foo"] = "bar"
+      check.param("foo").should == "bar"
     end
 
     it "can be set in the constructor" do
-      @check = Check.new(:foo => "bar")
+      @check = Check.new(:params => {:foo => "bar"})
       check.params.should == {"foo" => "bar"}
-      check[:foo].should == "bar"
+      check.param(:foo).should == "bar"
     end
   end
 
@@ -145,7 +144,18 @@ describe Check do
     end
 
     it "contains the params" do
-      Sample.new(:foo => "bar").to_s.should include({"foo" => "bar"}.inspect)
+      Sample.new(:params => {:foo => "bar"}).to_s.should include({"foo" => "bar"}.inspect)
+    end
+  end
+
+  describe "subclasses" do
+    class Overrider < Check
+      def default_params
+        super.merge({"foo" => "bar"})
+      end
+    end
+    it "can provide default params" do
+      Overrider.new.param("foo").should == "bar"
     end
   end
 end
