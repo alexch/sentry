@@ -19,7 +19,6 @@ describe Fetch do
       @check = Fetch.new(:url => "http://google.com/")
       @check[:url].should == "http://google.com/"
     end
-
   end
 
   describe '#run' do
@@ -30,6 +29,24 @@ describe Fetch do
       end.should raise_error(Errno::ECONNREFUSED)
       # in the app, run! will call run and catch the exception
     end
+  end
+
+  describe "url parsing" do
+    [
+      ["http://example.com", "example.com", 80, "/"],
+      ["http://example.com/", "example.com", 80, "/"],
+      ["http://example.com:88/", "example.com", 88, "/"],
+      ["http://example.com/foo/bar", "example.com", 80, "/foo/bar"],
+    ].each do |a|
+      url, host, port, path = a
+      it "parses #{url}" do
+        check = Fetch.new(:url => url)
+        check.host.should == host
+        check.port.should == port
+        check.path.should == path
+      end
+    end
+
   end
 
 end
