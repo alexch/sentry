@@ -12,29 +12,22 @@ describe Fetch do
 
   describe "params" do
     it "has defaults" do
-      @check[:timeout].should == 10
+      @check[:url].should == "http://example.com/"
     end
 
     it "can override defaults" do
-      @check = Fetch.new(:timeout => 9)
-      @check[:timeout].should == 9
+      @check = Fetch.new(:url => "http://google.com/")
+      @check[:url].should == "http://google.com/"
     end
 
-    it "has a default host" do
-      @check[:host].should == "example.com"
-    end
-
-    it "has a default path" do
-      @check[:path].should == "/"
-    end
   end
 
   describe '#run' do
     it "tries to connect to host" do
-      @check[:host] = "localhost:9876"
+      @check[:url] = "http://localhost:9876/"
       lambda do
         @check.run
-      end.should raise_error(Patron::ConnectionFailed)
+      end.should raise_error(Errno::ECONNREFUSED)
       # in the app, run! will call run and catch the exception
     end
   end
