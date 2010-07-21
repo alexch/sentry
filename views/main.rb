@@ -22,7 +22,7 @@ td.param, th.param { border: 1px solid gray; }
 td.param { width: 100%; }
 td, th { padding: 2px; }
 td.ok { color: green; }
-td.failure { color: red; }
+td.failed { color: red; }
 th { background-color: #EEE; text-align: left; }
       STYLE
     end
@@ -33,6 +33,7 @@ th { background-color: #EEE; text-align: left; }
       tr do
         th { text "type" }
         th { text "params" }
+        th { text "created" }
         th { text "outcome" }
         th { text "reason" }
       end
@@ -49,6 +50,7 @@ th { background-color: #EEE; text-align: left; }
               end
             end
           end
+          td { text check.created_at }
           td :class => check.outcome do
             text check.outcome
           end

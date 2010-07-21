@@ -7,7 +7,7 @@ describe Fetch do
   end
 
   it "is created in pending outcome" do
-    @check.outcome.should == :pending
+    @check.outcome.should == Check::PENDING
   end
 
   describe "params" do

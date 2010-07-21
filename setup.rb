@@ -8,6 +8,8 @@ require 'bundler'
 Bundler.setup
 
 require 'dm-core'
+require 'dm-migrations'
+require 'dm-timestamps'
 require 'exceptional'
 require 'erector'
 
@@ -33,3 +35,8 @@ ROOT_DIRS.each do |dir|
     require file
   end
 end
+
+# Finalize all models after loading them.
+# "This checks the models for validity and initializes all properties associated with relationships."
+DataMapper.finalize
+DataMapper::Model.raise_on_save_failure = true

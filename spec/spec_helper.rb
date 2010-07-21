@@ -5,13 +5,17 @@ require "sinatra"
 
 ENV['RACK_ENV'] = ENV['RAILS_ENV'] =  'test'
 
+DataMapper::Logger.new($stdout, :debug)
+DataMapper.setup(:default, 'sqlite::memory:')
+DataMapper.auto_migrate!
+
 Spec::Runner.configure do |config|
 
   class SentryApp < Sinatra::Base
     set :environment, :test
   end
 
-  require 'app'
+#  require 'app'
 
   config.before(:each) do
 #    OutgoingMessage.fake

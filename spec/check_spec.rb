@@ -27,13 +27,13 @@ describe Check do
   end
 
   it "is created in pending outcome" do
-    check.outcome.should == :pending
+    check.outcome.should == Check::PENDING
   end
 
   describe '#ok!' do
     it "succeeds" do
       check.ok!
-      check.outcome.should == :ok
+      check.outcome.should == Check::OK
     end
   end
 
@@ -52,32 +52,40 @@ describe Check do
     it "allows ok" do
       check = Win.new
       check.run!
-      check.outcome.should == :ok
+      check.outcome.should == Check::OK
     end
 
     it "catches exceptions" do
       check = Lose.new
       check.run!
-      check.outcome.should == :failure
+      check.outcome.should == Check::FAILED
       check.reason.should == "FTL"
     end
 
     it "lets run call failure" do
       check = Fail.new
       check.run!
-      check.outcome.should == :failure
+      check.outcome.should == Check::FAILED
       check.reason.should == "epic fail"
+    end
+
+    it "saves the check" do
+      check = Win.new
+      check.run!
+      check.should be_saved
+      check.id.should_not be_nil
     end
   end
 
   describe "#failure!" do
     it "sets the outcome" do
       check.failure!
-      check.outcome.should == :failure
+      check.outcome.should == Check::FAILED
     end
 
     it "reports an exception" do
-      Exceptional::Catcher.should_receive(:handle).with(CheckFailed.new(check.to_s))
+      mock = Exceptional::Catcher.should_receive(:handle)
+      mock.with(CheckFailed.new(check.to_s)) if RUBY_VERSION > "1.9"
       check.failure!
     end
 
