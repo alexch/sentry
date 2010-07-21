@@ -16,8 +16,10 @@ p{margin:1em 0;}
 /* sentry main page */
 body{ padding: 1em; }
 h1 { font-size: 14pt; margin-top: .5em; margin-bottom: .25em; }
-table { border-spacing: 0px 0px; }
-table, tr, td, th { border: 1px solid gray; }
+table { border-spacing: 0px 0px; border-collapse: collapse; }
+td, th { border: 2px solid gray; }
+td.param, th.param { border: 1px solid gray; }
+td.param { width: 100%; }
 td, th { padding: 2px; }
 td.ok { color: green; }
 td.failure { color: red; }
@@ -37,7 +39,16 @@ th { background-color: #EEE; text-align: left; }
       @checks.each do |check|
         tr do
           td { text check.class.name }
-          td { text check.params.inspect }
+          td do
+            check.params.each_pair do |key, value|
+              table :width => "100%" do
+                tr do
+                  th(:class => "param") { text key }
+                  td(:class => "param") { text value }
+                end
+              end
+            end
+          end
           td :class => check.outcome do
             text check.outcome
           end
