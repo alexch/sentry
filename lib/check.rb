@@ -40,24 +40,24 @@ class Check
     self.outcome = Check::OK
   end
 
-  def failure!(reason = nil)
-    self.outcome = FAILED
+  def fail!(reason = nil)
     self.reason = reason.to_s if reason
-    Exceptional::Catcher.handle(CheckFailed.new(to_s))
+    raise CheckFailed.new(to_s)
   end
 
   def run!
     begin
-      run
-      ok! if self.outcome == Check::PENDING
+      self.outcome = run || Check::OK
     rescue Exception => e
-      failure!(e)
+      self.outcome = FAILED
+      self.reason ||= e.to_s
+      Exceptional::Catcher.handle(e)
     end
     save
   end
 
   def run
-    raise NotImplementedError
+    raise NotImplementedError, "Please implement #{self.class}#run"
   end
 
 #  def params

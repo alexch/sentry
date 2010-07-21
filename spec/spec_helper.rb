@@ -26,3 +26,13 @@ Spec::Runner.configure do |config|
 #    DB.teardown  # rollback transaction
   end
 end
+
+# thanks http://erikonrails.snowedin.net/?p=230
+module DelayedJobSpecHelper
+  def work_off
+    Delayed::Job.all.each do |job|
+      job.payload_object.perform
+      job.destroy
+    end
+  end
+end

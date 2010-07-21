@@ -1,9 +1,10 @@
 require 'rubygems'
 require 'bundler'
-Bundler.setup :development
+Bundler.setup :default, :development
 
 require 'rake'
 require 'spec/rake/spectask'
+require 'delayed/tasks'
 
 here = File.expand_path(File.dirname(__FILE__))
 require "#{here}/setup"
@@ -17,5 +18,15 @@ end
 
 Spec::Rake::SpecTask.new do |spec|
   spec.spec_files = FileList['spec/**/*_spec.rb']
-  spec.spec_opts = ['--backtrace']
+#  spec.spec_opts = ['--backtrace']
 end
+
+task :setup_app do
+  DataMapper.setup(:default, 'sqlite:///db/sentry_dev.db')
+end
+
+namespace :jobs do
+  task :work => :setup_app
+  task :clear => :setup_app
+end
+

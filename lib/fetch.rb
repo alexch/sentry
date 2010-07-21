@@ -27,5 +27,6 @@ class Fetch < Check
       http.get(path)
     }
 #    puts response.body
+    OK
   end
 end

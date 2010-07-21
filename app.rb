@@ -32,7 +32,32 @@ class SentryApp < Sinatra::Base
   post "/check" do
     type = params[:type].constantize
     check = type.new(:params => params["params"]) # lol
+    puts "running #{check}"
     check.run!
+    redirect "/"
+  end
+
+  def capturing_output
+    output = StringIO.new
+    $stdout = output
+    yield
+    output.string
+  ensure
+    $stdout = STDOUT
+  end
+
+  get "/work" do
+    puts Delayed::Job.count
+    x= capturing_output do
+      Delayed::Job.all.each do |job|
+        p job
+        job.invoke_job
+#        job.payload_object.perform
+#        job.destroy
+      end
+#      Delayed::Worker.new.work_off
+    end
+    puts x
     redirect "/"
   end
 end

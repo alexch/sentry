@@ -25,11 +25,12 @@ td.ok { color: green; }
 td.failed { color: red; }
 th { background-color: #EEE; text-align: left; }
 
-div.new { float: right; margin: 0 2em; padding: 1em; border: 2px solid blue; }
+div.new { clear: both; float: right; margin: 0 2em 1em; padding: 1em; border: 2px solid blue; }
       STYLE
     end
 
     div :class => "new" do
+      h3 "Fetch"
       form :action => "/check", :method => "post" do
         input :type => "hidden", :name => "type", :value => "Fetch"
         table do
@@ -43,7 +44,29 @@ div.new { float: right; margin: 0 2em; padding: 1em; border: 2px solid blue; }
         input :type => :submit, :value => "Check Now"
       end
     end
-    
+
+    div :class => "new" do
+      h3 "Countdown"
+      form :action => "/check", :method => "post" do
+        input :type => "hidden", :name => "type", :value => "Countdown"
+        table do
+          tr do
+            th "sec"
+            td do
+              input :type => "text", :name => "params[sec]", :value => "10"
+            end
+          end
+        end
+        input :type => :submit, :value => "Check Now"
+      end
+    end
+
+    div :class => "new" do
+      form :action => "/work", :method => "get" do
+        input :type => :submit, :value => "Work"
+      end
+    end
+
     h1 "sentry"
 
     table do

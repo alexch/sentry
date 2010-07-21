@@ -12,6 +12,7 @@ require 'dm-migrations'
 require 'dm-timestamps'
 require 'exceptional'
 require 'erector'
+require "delayed_job"
 
 # class aliases
 Widget = Erector::Widget
@@ -35,6 +36,8 @@ ROOT_DIRS.each do |dir|
     require file
   end
 end
+
+Delayed::Worker.backend = :data_mapper
 
 # Finalize all models after loading them.
 # "This checks the models for validity and initializes all properties associated with relationships."

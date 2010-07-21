@@ -14,9 +14,15 @@ describe Check do
     end
   end
 
+  class Draw < Check
+    def run
+      Check::PENDING
+    end
+  end
+
   class Fail < Check
     def run
-      failure! "epic fail"
+      fail! "epic fail"
     end
   end
 
@@ -28,13 +34,6 @@ describe Check do
 
   it "is created in pending outcome" do
     check.outcome.should == Check::PENDING
-  end
-
-  describe '#ok!' do
-    it "succeeds" do
-      check.ok!
-      check.outcome.should == Check::OK
-    end
   end
 
   describe '#run' do
@@ -49,10 +48,16 @@ describe Check do
       check.run!
     end
 
-    it "allows ok" do
+    it "succeeds if nothing is returned from run" do
       check = Win.new
       check.run!
       check.outcome.should == Check::OK
+    end
+
+    it "uses the outcome returned from run" do
+      check = Draw.new
+      check.run!
+      check.outcome.should == Check::PENDING
     end
 
     it "catches exceptions" do
@@ -62,7 +67,12 @@ describe Check do
       check.reason.should == "FTL"
     end
 
-    it "lets run call failure" do
+    it "reports an exception" do
+      Exceptional::Catcher.should_receive(:handle)
+      Fail.new.run!
+    end
+
+    it "lets run call fail! on its own" do
       check = Fail.new
       check.run!
       check.outcome.should == Check::FAILED
@@ -77,25 +87,14 @@ describe Check do
     end
   end
 
-  describe "#failure!" do
-    it "sets the outcome" do
-      check.failure!
-      check.outcome.should == Check::FAILED
-    end
-
-    it "reports an exception" do
-      mock = Exceptional::Catcher.should_receive(:handle)
-      mock.with(CheckFailed.new(check.to_s)) if RUBY_VERSION > "1.9"
-      check.failure!
-    end
-
+  describe "#fail!" do
     it "has a reason" do
-      check.failure! "why"
+      lambda { check.fail! "why" }.should raise_error(CheckFailed)
       check.to_s.should include("why")
     end
 
     it "has a reason that's an exception" do
-      check.failure! RuntimeError.new("why")
+      lambda { check.fail! RuntimeError.new("why") }.should raise_error(CheckFailed)
       check.to_s.should include("why")
     end
   end
