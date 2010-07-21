@@ -1,15 +1,16 @@
-require "patron"
+require 'net/http'
+require 'uri'
 
 class Fetch < Check
   def initialize(options = {})
-    super({:timeout => 10, :host => "example.com", :path => "/"}.merge(options))
+    super({:url => "http://example.com/"}.merge(options))
   end
 
   def run
-    session = Patron::Session.new
-    session.timeout = self[:timeout]
-    session.base_url = self[:host]
-#    session.headers['User-Agent'] = 'myapp/1.0'
-    response = session.get(self[:path])
+    url = URI.parse(self[:url])
+    response = Net::HTTP.start(url.host, url.port) {|http|
+      http.get(url.path)
+    }
+#    puts response.body
   end
 end
