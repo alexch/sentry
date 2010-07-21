@@ -4,6 +4,7 @@ require "sinatra"
 class SentryApp < Sinatra::Base
   get "/" do
     checks = [
+            Fetch.new(:url => "http://notarealhost.foo"),
             Fetch.new(:url => "http://google.com"),
             Fetch.new(:url => "http://cohuman.com/home")
     ]
