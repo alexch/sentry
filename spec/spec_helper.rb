@@ -2,12 +2,15 @@ here = File.expand_path(File.dirname(__FILE__))
 require File.expand_path("#{here}/../setup")
 require 'spec'
 require "sinatra"
+require "logger"
 
 ENV['RACK_ENV'] = ENV['RAILS_ENV'] =  'test'
 
 DataMapper::Logger.new(Pathname.new("#{ROOT}/log/test.log"), :debug)
 DataMapper.setup(:default, 'sqlite::memory:')
 DataMapper.auto_migrate!
+
+Object.logger = Logger.new(File.open('log/test.log', File::WRONLY | File::APPEND | File::CREAT))
 
 Spec::Runner.configure do |config|
 
@@ -18,7 +21,7 @@ Spec::Runner.configure do |config|
 #  require 'app'
 
   config.before(:each) do
-#    OutgoingMessage.fake
+    OutgoingMessage.fake
 #    DB.setup  # start transaction
   end
 

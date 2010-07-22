@@ -37,15 +37,6 @@ class SentryApp < Sinatra::Base
     redirect "/"
   end
 
-  def capturing_output
-    output = StringIO.new
-    $stdout = output
-    yield
-    output.string
-  ensure
-    $stdout = STDOUT
-  end
-
   get "/work" do
     puts Delayed::Job.count
     x= capturing_output do

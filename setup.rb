@@ -28,6 +28,11 @@ class Object
   end
 end
 
+env = Pathname.new "#{ROOT}/config/env.rb"
+if File.exist? env
+  load env
+end
+
 ROOT_DIRS = ["lib", "views"]
 
 # pre-require files underneath source root directories
@@ -43,3 +48,13 @@ Delayed::Worker.backend = :data_mapper
 # "This checks the models for validity and initializes all properties associated with relationships."
 DataMapper.finalize
 DataMapper::Model.raise_on_save_failure = true
+
+# utility methods
+def capturing_output
+  output = StringIO.new
+  $stdout = output
+  yield
+  output.string
+ensure
+  $stdout = STDOUT # STDOUT is the original output stream from when the Ruby interpreter was started
+end

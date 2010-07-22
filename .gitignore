@@ -1,3 +1,4 @@
 .idea
 .bundle
 log
+config/env.rb
