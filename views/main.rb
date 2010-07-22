@@ -1,5 +1,24 @@
 class Main < Widget
   needs :checks
+
+  def new_check(check_type, param_name, param_value)
+    div :class => "new" do
+      h3 check_type
+      form :action => "/check", :method => "post" do
+        input :type => "hidden", :name => "type", :value => check_type
+        table do
+          tr do
+            th param_name
+            td do
+              input :type => "text", :name => "params[#{param_name}]", :value => param_value
+            end
+          end
+        end
+        input :type => :submit, :value => "Check Now"
+      end
+    end
+  end
+
   def content
     head do
       title "Sentry"
@@ -29,37 +48,9 @@ div.new { clear: both; float: right; margin: 0 2em 1em; padding: 1em; border: 2p
       STYLE
     end
 
-    div :class => "new" do
-      h3 "Fetch"
-      form :action => "/check", :method => "post" do
-        input :type => "hidden", :name => "type", :value => "Fetch"
-        table do
-          tr do
-            th "url"
-            td do
-              input :type => "text", :name => "params[url]", :value => "http://www.google.com"
-            end
-          end
-        end
-        input :type => :submit, :value => "Check Now"
-      end
-    end
-
-    div :class => "new" do
-      h3 "Countdown"
-      form :action => "/check", :method => "post" do
-        input :type => "hidden", :name => "type", :value => "Countdown"
-        table do
-          tr do
-            th "sec"
-            td do
-              input :type => "text", :name => "params[sec]", :value => "10"
-            end
-          end
-        end
-        input :type => :submit, :value => "Check Now"
-      end
-    end
+    new_check("Fetch", "url", "http://www.google.com")
+    new_check("Countdown", "sec", "10")
+    new_check("Send", "to", "nobody@example.com")
 
     div :class => "new" do
       form :action => "/work", :method => "get" do
