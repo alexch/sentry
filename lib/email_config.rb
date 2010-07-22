@@ -1,5 +1,11 @@
 class EmailConfig
 
+  def self.env(variable_name)
+    ENV[variable_name] || begin
+      $stderr.puts "Please set #{variable_name} in config/env.rb or using 'heroku config:add'"
+    end
+  end
+
   def self.get(env = Kernel.environment)
 
     # todo: move this into a YAML file
@@ -18,9 +24,9 @@ class EmailConfig
             :server         => "smtp.sendgrid.net",
             :port           => 587,
             :authtype       => :plain,
-            :user           => ENV['SENDGRID_USERNAME'],
-            :secret         => ENV['SENDGRID_PASSWORD'],
-            :helo           => ENV['SENDGRID_DOMAIN'],
+            :user           => env('SENDGRID_USERNAME'),
+            :secret         => env('SENDGRID_PASSWORD'),
+            :helo           => env('SENDGRID_DOMAIN'),
             }
 
     EmailConfig.new case env
@@ -49,15 +55,15 @@ class EmailConfig
                 :from => 'sentry@cohuman.com',
                 :outgoing => sendgrid,
                 :incoming => hostito_imap << {
-                        :user => ENV['IMAP_USER'],
-                        :secret => ENV['IMAP_SECRET'],
+                        :user => env('IMAP_USER'),
+                        :secret => env('IMAP_SECRET'),
                         }
         }
 
       else
         # other emails, like deploy messages, get pushed through sendgrid
         {
-                :from => 'dev@cohuman.com',
+                :from => 'sentry@localhost',
                 :outgoing => sendgrid << {
                         :debug => true,
                         },
