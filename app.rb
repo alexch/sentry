@@ -12,7 +12,7 @@ class SentryApp < Sinatra::Base
     if ENV['DATABASE_URL']
       DataMapper.auto_upgrade!
     else
-      puts "Auto migrating"
+      puts "Wiping DB..."
       DataMapper.auto_migrate!
       checks = [
               Fetch.create(:params => {"url" => "http://notarealhost.foo"}),
