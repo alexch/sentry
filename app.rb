@@ -38,15 +38,13 @@ class SentryApp < Sinatra::Base
   end
 
   get "/work" do
-    puts Delayed::Job.count
     x= capturing_output do
       Delayed::Job.all.each do |job|
-        p job
+        puts "invoking #{job.inspect}"
         job.invoke_job
-#        job.payload_object.perform
-#        job.destroy
+        job.destroy
       end
-#      Delayed::Worker.new.work_off
+#      Delayed::Worker.new.work_off  # this would do only the ones that need it
     end
     puts x
     redirect "/"

@@ -128,4 +128,11 @@ describe ReceivedMessage do
     end
   end
 
+  it 'can be marked for deletion' do
+    m = message
+    m.delete?.should be_false
+    m.delete
+    m.delete?.should be_true
+  end
+
 end

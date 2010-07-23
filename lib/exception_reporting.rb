@@ -24,8 +24,9 @@ module ExceptionReporting
         end
       end
 
-      if Kernel.environment == 'test'
-        puts "Reporting Exception: #{exception}"
+      puts Kernel.environment
+      if ['test', 'development'].include? Kernel.environment
+        puts "Reporting Exception: #{exception.class}: #{exception.message}"
         puts "\t" + exception.backtrace.join("\n\t")
       end
 

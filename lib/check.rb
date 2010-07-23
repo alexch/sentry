@@ -1,4 +1,5 @@
 class Check
+  include ExceptionReporting
 
   PENDING = "pending"
   OK = "ok"
@@ -51,7 +52,7 @@ class Check
     rescue Exception => e
       self.outcome = FAILED
       self.reason ||= e.to_s
-      Exceptional::Catcher.handle(e)
+      report_exception(e)
     end
     save
   end
@@ -60,20 +61,31 @@ class Check
     raise NotImplementedError, "Please implement #{self.class}#run"
   end
 
+  # Note: we use a separate runner object to avoid a DJ bug:
+  # http://github.com/collectiveidea/delayed_job/issues#issue/92
+  # todo: test this object independently
   class Runner
-    def initialize(check_id)
-      @check_id = check_id
+    def initialize(check, time, method = nil)
+      check.save if check.id.nil?
+      @check_id = check.id
+      @method = method || :run!
+      Delayed::Job.enqueue(self, 0, time.from_now)
     end
 
     def perform
       check = Check.get(@check_id)
-      check.run!
+      if check.nil?
+        logger.error("Couldn't find check##{@check_id.inspect}")
+      else
+        check.send @method
+        puts "runner performed #{@method} on #{check.inspect}"
+      end
     end
   end
 
   # todo: test (independently of countdown_spec)
-  def run_in(time)
-    Delayed::Job.enqueue(Runner.new(id), 0, time.from_now)
+  def run_in(time, method = nil)
+    Runner.new(self, time, method)
   end
 
   #todo: run_at

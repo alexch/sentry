@@ -1,16 +1,20 @@
 class Main < Widget
   needs :checks
 
-  def new_check(check_type, param_name, param_value)
+  def new_check(check_type, params = {})
     div :class => "new" do
       h3 check_type
       form :action => "/check", :method => "post" do
         input :type => "hidden", :name => "type", :value => check_type
-        table do
-          tr do
-            th param_name
-            td do
-              input :type => "text", :name => "params[#{param_name}]", :value => param_value
+        unless params.empty?
+          table do
+            params.each_pair do |param_name, param_value|
+              tr do
+                th param_name
+                td do
+                  input :type => "text", :name => "params[#{param_name}]", :value => param_value
+                end
+              end
             end
           end
         end
@@ -48,9 +52,10 @@ div.new { clear: both; float: right; margin: 0 2em 1em; padding: 1em; border: 2p
       STYLE
     end
 
-    new_check("Fetch", "url", "http://www.google.com")
-    new_check("Countdown", "sec", "10")
-    new_check("Send", "to", "nobody@example.com")
+    new_check("Fetch", :url => "http://www.google.com")
+    new_check("Countdown", :sec => 10)
+    new_check("Send", :to => "nobody@example.com")
+    new_check("NewTask")
 
     div :class => "new" do
       form :action => "/work", :method => "get" do

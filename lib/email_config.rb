@@ -18,6 +18,8 @@ class EmailConfig
     hostito_imap = {
             :server => "secure02.secure-transact.net",
             :port => 993,
+            :user => env('IMAP_USERNAME'),
+            :secret => env('IMAP_PASSWORD'),
             }
 
     sendgrid = {
@@ -54,20 +56,18 @@ class EmailConfig
         {
                 :from => 'sentry@cohuman.com',
                 :outgoing => sendgrid,
-                :incoming => hostito_imap << {
-                        :user => env('IMAP_USER'),
-                        :secret => env('IMAP_SECRET'),
-                        }
+                :incoming => hostito_imap
         }
 
       else
         # other emails, like deploy messages, get pushed through sendgrid
         {
-                :from => 'sentry@localhost',
+                :from => 'sentry@cohuman.com',
                 :outgoing => sendgrid << {
                         :debug => true,
                         },
-                :incoming => nil
+#                :incoming => nil
+                :incoming => hostito_imap
         }
     end
 

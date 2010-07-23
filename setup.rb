@@ -35,6 +35,8 @@ end
 
 ROOT_DIRS = ["lib", "views"]
 
+require "lib/exception_reporting"
+
 # pre-require files underneath source root directories
 ROOT_DIRS.each do |dir|
   Dir["#{dir}/**/*.rb"].sort.each do |file|

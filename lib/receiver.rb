@@ -8,32 +8,21 @@ require 'exception_reporting'
 class Receiver
   include ExceptionReporting
 
-  attr_reader :config, :keep, :debug
+  attr_reader :config, :debug
   
-  def initialize(opts = {})
+  def initialize(opts = {}, &block)
     @config = !!opts[:config]
-    @keep = !!opts[:keep]
     @debug = !!opts[:debug]
+    @processor = block
   end
 
   def config
     @config || EmailConfig.get
   end
 
-  def receive(rfc822)
-    puts "--- received email:\n#{rfc822}" if @debug
-    received_message = ReceivedMessage.new(rfc822, config)
-    received_message.process
-    received_message
-  end
-
-  def log_exception(e)
-    report_exception(e)
-    say e.to_s
-  end
-
   # todo: figure out how to test
-  def scan
+  def scan(&block)
+    @processor = block if block
     incoming_config = config.incoming
     if incoming_config.nil?
       logger.error("Not scanning for incoming mail, since environment is '#{Kernel.environment}'")
@@ -58,11 +47,11 @@ class Receiver
           c += 1
         rescue Exception => exception
           # todo: move message into an "error" folder so it doesn't get reprocessed, but don't delete it
-          log_exception(exception)
-          say "Error processing message #{message_id}"
+          report_exception(exception)
+          say "Error processing message #{message_id}: #{exception.class.name}: #{exception.message}"
           e += 1
         ensure
-          if !keep
+          if received_message.delete?
             say "Deleting message #{message_id}"
             imap.store(message_id, "+FLAGS", [:Deleted])
           end
@@ -73,14 +62,19 @@ class Receiver
       imap.logout
       imap.disconnect
     # NoResponseError and ByeResponseError happen often when imap'ing
-    rescue Net::IMAP::NoResponseError => e
-      log_exception(e)
-    rescue Net::IMAP::ByeResponseError => e
+    rescue Net::IMAP::NoResponseError, Net::IMAP::ByeResponseError, Errno::ENOTCONN
       # ignore
     rescue Exception => e
       log_exception(e)
     end
     say "Processed #{c.inspect} of #{n.inspect} emails received (#{e} errors)."
+  end
+
+  def receive(rfc822)
+    say "Received email:\n#{rfc822}" if @debug
+    received_message = ReceivedMessage.new(rfc822, config)
+    @processor.call received_message
+    received_message
   end
 
   # Run a scan, then enqueue as a DelayedJob 20 seconds into the future

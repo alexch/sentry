@@ -20,49 +20,18 @@ class ReceivedMessage
   end
 
   def body
-    body = find_comment
-
+    body = find_body
     body = body.
       gsub(/\r\n/, "\n") # remove network newlines
-
-#    if (mail['X-Mailer'] && (mail['X-Mailer'].to_s =~ /iPhone Mail/))
-#      parts = body.split(/^Begin forwarded message:$/)
-#      if parts.size == 2
-#        body = parts.first + "Begin forwarded message:" + parts.last.gsub(/^> ?/, '')
-#      end
-#    end
-#
-#    body = body.
-#      gsub(/^--+( *)$.*/m, '').# remove .sig
-#      gsub(/^__+( *)$.*/m, '').# remove yahoo fwd
-#      gsub(/<http:\/\/[^.]*.sendgrid.info[^>]*>/, '') # remove sendgrid rewrite links sent from staging
-#
     body.strip!
-
-    body = strip_fwd_lines(body)
-
     return body
-  end
-
-  def strip_fwd_lines(body)
-    lines = body.split("\n")
-    while !lines.empty? && fwd?(lines.last)
-      lines.pop
-    end
-
-    if (lines.last =~ /^[^ ]*:$/ && lines[lines.size - 2] != /^On /)
-      lines.pop
-      lines.pop
-    end
-
-    lines.join("\n").strip
   end
 
   def fwd?(line)
     line.blank? || line =~ /^>/ || line.match(/^On .*:$/)
   end
 
-  def find_comment
+  def find_body
     if mail.multipart?
       mail.parts.each do |part|
         # http://en.wikipedia.org/wiki/MIME#Content-Disposition
@@ -102,6 +71,14 @@ class ReceivedMessage
 
   def recipients
     ([mail.to] + [mail.cc] + [mail["Delivered-To"].to_s]).flatten.compact
+  end
+
+  def delete
+    @delete = true
+  end
+
+  def delete?
+    !!@delete # force to true or false
   end
 
   protected
