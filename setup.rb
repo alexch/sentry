@@ -1,3 +1,4 @@
+unless Object.const_defined? :ROOT
 ROOT = File.expand_path(File.dirname(__FILE__))
 $:.unshift ROOT
 $:.unshift "#{ROOT}/lib"
@@ -53,10 +54,12 @@ DataMapper::Model.raise_on_save_failure = true
 
 # utility methods
 def capturing_output
-  output = StringIO.new
-  $stdout = output
+  original_stdout = $stdout
+  $stdout = StringIO.new
   yield
-  output.string
+  $stdout.string
 ensure
-  $stdout = STDOUT # STDOUT is the original output stream from when the Ruby interpreter was started
+  $stdout = original_stdout
+end
+
 end

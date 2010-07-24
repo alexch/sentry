@@ -78,7 +78,6 @@ class Check
         logger.error("Couldn't find check##{@check_id.inspect}")
       else
         check.send @method
-        puts "runner performed #{@method} on #{check.inspect}"
       end
     end
   end

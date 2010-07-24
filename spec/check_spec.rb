@@ -62,26 +62,34 @@ describe Check do
 
     it "catches exceptions" do
       check = Lose.new
-      check.run!
+      capturing_output do
+        check.run!
+      end
       check.outcome.should == Check::FAILED
       check.reason.should == "FTL"
     end
 
     it "reports an exception" do
       Exceptional::Catcher.should_receive(:handle)
-      Fail.new.run!
+      capturing_output do
+        Fail.new.run!
+      end
     end
 
     it "lets run call fail! on its own" do
       check = Fail.new
-      check.run!
+      capturing_output do
+        check.run!
+      end
       check.outcome.should == Check::FAILED
       check.reason.should == "epic fail"
     end
 
     it "saves the check" do
       check = Win.new
-      check.run!
+      capturing_output do
+        check.run!
+      end
       check.should be_saved
       check.id.should_not be_nil
     end

@@ -23,7 +23,6 @@ describe Hash do
     it "works if one of the values is a hash" do
       {:a => 1, :b => {:x => 7}}.remap { |key, value| [key, value] }.should == {:a => 1, :b => {:x => 7}}
     end
-
   end
 
   describe '#to_params' do
@@ -33,23 +32,34 @@ describe Hash do
     end
 
     it "cgi escapes its parameters" do
-      pending
+      s = {"foo" => "'Stop!' said Fred"}.to_params
+      s.should == "foo=%27Stop%21%27+said+Fred"
     end
   end
 
   describe '#from_params' do
     it "converts a CGI string" do
-      Hash.from_params("a=1&b=2").should == {:a => "1", :b => "2"}
+      Hash.from_params("a=1&b=2").should == {"a" => "1", "b" => "2"}
     end
 
     it "cgi unescapes its parameters" do
-      pending
+      s = "foo=%27Stop%21%27+said+Fred"
+      Hash.from_params(s).should == {"foo" => "'Stop!' said Fred"}
     end
   end
 
   describe 'shovel as merge' do
     it '<< is aliased to merge' do
       ({:a => 1} << {:b => 2}).should == ({:a => 1, :b => 2})
+    end
+  end
+
+  describe '#stringify_keys!' do
+    # this is defined in active_support
+    it "converts all keys to strings" do
+      h = {:foo => "bar"}
+      h.stringify_keys!
+      h.should == {"foo" => "bar"}
     end
   end
 end

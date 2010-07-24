@@ -12,15 +12,18 @@ class SentryApp < Sinatra::Base
     if ENV['DATABASE_URL']
       DataMapper.auto_upgrade!
     else
-      puts "Wiping DB..."
+      puts "Wiping DB"
       DataMapper.auto_migrate!
       checks = [
               Fetch.create(:params => {"url" => "http://notarealhost.foo"}),
               Fetch.create(:params => {:url => "http://google.com"}),
               Fetch.create(:params => {:url => "http://cohuman.com/home"}),
       ]
+      puts "Adding sample data"
       checks.each do |check|
-        check.run!
+        capturing_output do
+          check.run!
+        end
       end
     end
   end

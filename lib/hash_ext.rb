@@ -11,13 +11,15 @@ class Hash
     end.compact.flatten]
   end
 
+
+
   #todo: escaping/unescaping of param values
 
   # converts a hash into CGI parameters
   def to_params
     elements = []
     keys.size.times do |i|
-      elements << "#{keys[i]}=#{values[i]}"
+      elements << "#{keys[i].to_s}=#{CGI::escape values[i].to_s}"
     end
     elements.join('&')
   end
@@ -27,9 +29,16 @@ class Hash
     result = {}
     params.split('&').each do |element|
       element = element.split('=')
-      result[element[0].to_sym] = element[1]
+      result[element[0].to_s] = CGI::unescape(element[1])
     end
     result
   end
 
+  def stringify_keys!
+    keys.each do |key|
+      self[key.to_s] = delete(key)
+    end
+    self
+  end
+  
 end
