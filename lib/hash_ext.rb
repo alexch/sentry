@@ -6,14 +6,10 @@ class Hash
   # turns a hash into a hash
   def remap
     # This is Ruby magic for turning a hash into an array into a hash again
-    Hash[*self.map do |key, value|
+    Hash[* self.map do |key, value|
       yield key, value
     end.compact.flatten]
   end
-
-
-
-  #todo: escaping/unescaping of param values
 
   # converts a hash into CGI parameters
   def to_params
@@ -34,11 +30,20 @@ class Hash
     result
   end
 
+  # stolen from active_support
+  def stringify_keys
+    inject({}) do |options, (key, value)|
+      options[key.to_s] = value
+      options
+    end
+  end
+
+  # stolen from active_support
   def stringify_keys!
     keys.each do |key|
       self[key.to_s] = delete(key)
     end
     self
   end
-  
+
 end

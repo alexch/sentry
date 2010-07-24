@@ -55,11 +55,20 @@ describe Hash do
   end
 
   describe '#stringify_keys!' do
-    # this is defined in active_support
+    # this is also defined in active_support
     it "converts all keys to strings" do
       h = {:foo => "bar"}
       h.stringify_keys!
       h.should == {"foo" => "bar"}
+    end
+  end
+
+  describe '#stringify_keys' do
+    # this is also defined in active_support
+    it "converts all keys to strings" do
+      h = {:foo => "bar"}
+      h.stringify_keys.should == {"foo" => "bar"}
+      h.should == {:foo => "bar"}
     end
   end
 end

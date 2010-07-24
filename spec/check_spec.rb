@@ -129,9 +129,10 @@ describe Check do
       check.param(:foo).should == "bar"
     end
 
-    it "does allows setting the live params hash" do
-      check.params["foo"] = "bar"
-      check.param("foo").should == "bar"
+    it "does not allow setting the live params hash" do
+      lambda do
+        check.params["foo"] = "bar"
+      end .should raise_error("Sorry, but you can't modify the params object directly. Try obj.param(\"foo\", \"bar\") instead.")
     end
 
     it "can be set in the constructor" do
@@ -169,7 +170,10 @@ describe Check do
       end
     end
     it "can provide default params" do
-      Overrider.new.param("foo").should == "bar"
+      check = Overrider.new
+      check.param("foo").should == "bar"
+      check.reload
+      check.param("foo").should == "bar"
     end
   end
 end
