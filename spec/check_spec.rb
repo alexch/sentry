@@ -2,30 +2,6 @@ here = File.expand_path(File.dirname(__FILE__))
 require "#{here}/spec_helper"
 
 describe Check do
-  class Win < Check
-    def run
-      # no news is good news
-    end
-  end
-
-  class Lose < Check
-    def run
-      raise "FTL"
-    end
-  end
-
-  class Draw < Check
-    def run
-      Check::PENDING
-    end
-  end
-
-  class Fail < Check
-    def run
-      fail! "epic fail"
-    end
-  end
-
   attr_reader :check
   
   before do
@@ -107,6 +83,7 @@ describe Check do
     end
   end
 
+  # these tests are now duplicated in params_spec
   describe "params" do
     it "has none by default" do
       check.params.should == {}

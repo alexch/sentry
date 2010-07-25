@@ -39,3 +39,34 @@ module DelayedJobSpecHelper
     end
   end
 end
+
+# sample check classes, for testing
+class Win < Check
+  def run
+    # no news is good news
+  end
+end
+
+class Lose < Check
+  def run
+    raise "FTL"
+  end
+end
+
+class Draw < Check
+  def run
+    Check::PENDING
+  end
+end
+
+class Fail < Check
+  def run
+    fail! "epic fail"
+  end
+end
+
+class Echo < Check
+  def run
+    puts param("message")
+  end
+end

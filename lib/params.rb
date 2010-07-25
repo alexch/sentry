@@ -5,7 +5,7 @@ module Params
 
   def self.included(resource)
     resource.class_eval do
-      property :params, Object
+      property :params, DataMapper::Property::Json
       before :save, :stringify_params
     end
   end
@@ -41,7 +41,7 @@ module Params
   def param(* args)
     if args.length == 2
       key, value = args
-      new_params = get_params.dup # need to dup so DM knows it's dirty
+      new_params = get_params # get_params needs to return a dup and re-set it so DM knows it's dirty
       new_params[key.to_s] = value
       attribute_set(:params, new_params)
     elsif args.length == 1
@@ -57,11 +57,10 @@ module Params
   def get_params
     p = attribute_get(:params)
     if p.nil?
-      p = default_params
+      default_params
     else
-      p.stringify_keys!
+      p.stringify_keys
     end
-    p
   end
 
 end

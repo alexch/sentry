@@ -15,6 +15,8 @@ class Check
   property :outcome, String, :length => 25, :default => Check::PENDING
   property :reason, Text
 
+  belongs_to :checker, :required => false
+  
 #  def initialize(attributes={}, & block)
 #    attributes = defaults.merge(attributes.stringify_keys)
 #    super(attributes, &block)

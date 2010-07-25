@@ -11,6 +11,8 @@ Bundler.setup
 require 'dm-core'
 require 'dm-migrations'
 require 'dm-timestamps'
+require 'dm-validations'
+require 'dm-types/json'
 require 'exceptional'
 require 'erector'
 require "delayed_job"
@@ -61,5 +63,12 @@ def capturing_output
 ensure
   $stdout = original_stdout
 end
+
+  # workaround for activesupport vs. json_pure vs. Ruby 1.8 glitch
+  if JSON.const_defined?(:Pure)
+    class JSON::Pure::Generator::State
+      include ActiveSupport::CoreExtensions::Hash::Except
+    end
+  end
 
 end
