@@ -2,6 +2,9 @@ require "setup"
 require "sinatra"
 
 class SentryApp < Sinatra::Base
+  set :app_file, __FILE__
+  set :root, File.dirname(__FILE__)
+  
   configure :production do
     DataMapper::Logger.new($stdout, :debug)
   end
@@ -22,7 +25,7 @@ class SentryApp < Sinatra::Base
   end
 
   get "/" do
-    Main.new(:checks => Check.all).to_html
+    Main.new(:checks => Check.all).to_pretty
   end
 
   post "/check" do

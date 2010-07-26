@@ -74,4 +74,22 @@ end
     end
   end
 
+  # todo: fix in Erector
+  class ExternalRenderer < Erector::Widget
+    def inline_scripts
+      rendered_externals(:script).each do |external|
+        javascript external.options do
+          rawtext external.text
+        end
+      end
+      rendered_externals(:jquery).each do |external|
+        jquery :load, external.text, external.options
+      end
+      rendered_externals(:jquery_ready).each do |external|
+        jquery :ready, external.text, external.options
+      end
+    end
+  end
+
+
 end

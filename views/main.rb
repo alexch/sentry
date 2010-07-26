@@ -33,11 +33,47 @@ div.buttons { float: right; margin: 0 2em 1em; padding: 1em; border: 2px solid b
 div.buttons ul { list-style-type: none; }
 div.buttons li { display: inline; margin: .5em; }
 div.buttons form { display: inline; }
-      STYLE
+  STYLE
+
+  external :script, <<-SCRIPT
+// Prevents event bubble up or any usage after this is called.
+// Thanks to http://projectoverflow.com/questions/128923/html-whats-the-effect-of-adding-return-false-to-an-onclick-event
+function cancelEvent(e) {
+	if (!e)
+		if (window.event) e = window.event;
+		else return false;
+		if (e.cancelBubble != null) e.cancelBubble = true;
+		if (e.stopPropagation) e.stopPropagation();
+		if (e.preventDefault) e.preventDefault();
+		if (window.event) e.returnValue = false;
+		if (e.cancel != null) e.cancel = true;
+		return false;
+}
+nothing = cancelEvent;
+
+/* Log to console, but don't crash if console is absent */
+function log(message){
+	if (typeof(console) != 'undefined' && typeof(console.log) == 'function'){
+		console.log( message );
+	}
+}
+  SCRIPT
+
+  def head_content
+    super
+    script :src => "http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"
+  end
+
+  def inline_scripts
+    super
+    # todo: allow :load or :ready as options, in normal ExternalRenderer for :jquery
+    rendered_externals(:jquery_ready).each do |external|
+      jquery :ready, external.text, external.options
+    end
+  end
+
 
   def body_content
-
-    h1 "sentry"
 
     div :class => "buttons" do
       h3 "magic buttons:"
@@ -46,17 +82,19 @@ div.buttons form { display: inline; }
           form :action => "/work", :method => "get" do
             input :type => :submit, :value => "Work"
           end
-          li do
-            form :action => "/sample", :method => "get" do
-              input :type => :submit, :value => "Sample"
-            end
+        end
+        li do
+          form :action => "/sample", :method => "get" do
+            input :type => :submit, :value => "Sample"
           end
         end
       end
     end
 
-    h1 "checks"
+    h1 "sentry"
+    br
 
+    h1 "checks"
     table do
       tr do
         th { text "type" }
@@ -86,7 +124,8 @@ div.buttons form { display: inline; }
         end
       end
     end
-
+    
+    br
     widget NewCheck
 
   end

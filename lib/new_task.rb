@@ -21,7 +21,7 @@ class NewTask < Check
   end
 
   def wait_for
-    sec = param("wait_for").to_i
+    param("wait_for").to_i.seconds
   end
 
   def send_email
@@ -46,7 +46,7 @@ class NewTask < Check
     if ok
       OK
     else
-      self.reason = "did not receive confirmation email within #{WAIT_FOR} seconds"
+      self.reason = "did not receive confirmation email within #{wait_for} seconds"
       FAILED
     end
   end
