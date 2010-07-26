@@ -8,6 +8,8 @@ ENV['RACK_ENV'] = ENV['RAILS_ENV'] =  'test'
 
 DataMapper::Logger.new(Pathname.new("#{ROOT}/log/test.log"), :debug)
 DataMapper.setup(:default, 'sqlite::memory:')
+#require "dm-core/adapters/in_memory_adapter"
+#DataMapper.setup(:default, :adapter => :in_memory)
 DataMapper.auto_migrate!
 
 Object.logger = Logger.new(File.open('log/test.log', File::WRONLY | File::APPEND | File::CREAT))
@@ -18,10 +20,24 @@ Spec::Runner.configure do |config|
     set :environment, :test
   end
 
-#  require 'app'
-
   config.before(:each) do
     OutgoingMessage.fake
+
+
+#      # --- Temporary private api use to get around rspec limitations ---
+#      @repository.scope do |repository|
+#        transaction = DataMapper::Transaction.new(repository)
+#        transaction.begin
+#        repository.adapter.push_transaction(transaction)
+#      end
+#
+#
+#    after do
+#      while @repository.adapter.current_transaction
+#        @repository.adapter.pop_transaction.rollback
+#      end
+#    end
+
 #    DB.setup  # start transaction
   end
 

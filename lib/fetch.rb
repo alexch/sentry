@@ -3,7 +3,7 @@ require 'uri'
 
 class Fetch < Check
   def default_params
-    super.merge({"url" => "http://example.com/"})
+    super.merge("url" => "http://example.com/")
   end
 
   def parsed_url

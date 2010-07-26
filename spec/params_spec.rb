@@ -5,13 +5,13 @@ describe Params do
   class Dog
     include DataMapper::Resource
     include Params
-    
+
     property :id, Serial
-    
+
   end
 
   attr_reader :dog
-  
+
   before do
     @dog = Dog.new
   end

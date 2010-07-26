@@ -3,8 +3,10 @@
 # check that comment was added
 class NewTask < Check
 
-  WAIT_FOR = 60
-  
+  def default_params
+    super.merge("wait_for" => 60)
+  end
+
   def subject
     "task #{param("key")}"
   end
@@ -18,6 +20,10 @@ class NewTask < Check
     end
   end
 
+  def wait_for
+    sec = param("wait_for").to_i
+  end
+
   def send_email
     param("key", "#{Time.now.to_i}/#{rand(10000)}")
     OutgoingMessage.new(
@@ -25,7 +31,7 @@ class NewTask < Check
             :subject => subject,
             :body => subject
     ).deliver
-    run_in(WAIT_FOR.seconds)
+    run_in(wait_for.seconds)
     PENDING
   end
 

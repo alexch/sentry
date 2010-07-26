@@ -1,5 +1,8 @@
 class Countdown < Check
-
+  def default_params
+    super.merge(:sec => 10)
+  end
+  
   def run
     secs = param("sec").to_i
     if secs == 0

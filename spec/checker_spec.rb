@@ -14,7 +14,6 @@ describe Checker do
   end
 
   describe "spawning checks" do
-
     it "can't spawn a check until it's saved" do
       checker = Checker.new(:check_type => "Win")
       lambda { checker.run_check }.should raise_error(Checker::UnsavedChecker)
@@ -45,5 +44,9 @@ describe Checker do
       checker.checks.should == [check]
       check.checker.should == checker
     end
+  end
+
+  describe "enqueuing checks" do
+    
   end
 end

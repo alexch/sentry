@@ -47,12 +47,15 @@ ROOT_DIRS.each do |dir|
   end
 end
 
+  include Measure
+
 Delayed::Worker.backend = :data_mapper
 
 # Finalize all models after loading them.
 # "This checks the models for validity and initializes all properties associated with relationships."
 DataMapper.finalize
 DataMapper::Model.raise_on_save_failure = true
+
 
 # utility methods
 def capturing_output

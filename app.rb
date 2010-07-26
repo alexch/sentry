@@ -8,22 +8,15 @@ class SentryApp < Sinatra::Base
 
   configure do
     DataMapper.setup(:default, ENV['DATABASE_URL'] || 'sqlite3::memory:')
+
     # workaround for bug http://datamapper.lighthouseapp.com/projects/20609/tickets/1289-autoupgrades-fail-on-sti-models
     if ENV['DATABASE_URL']
-      DataMapper.auto_upgrade!
+      measure "Upgrading DB" do
+        DataMapper.auto_upgrade!
+      end
     else
-      puts "Wiping DB"
-      DataMapper.auto_migrate!
-      checks = [
-              Fetch.create(:params => {"url" => "http://notarealhost.foo"}),
-              Fetch.create(:params => {:url => "http://google.com"}),
-              Fetch.create(:params => {:url => "http://cohuman.com/home"}),
-      ]
-      puts "Adding sample data"
-      checks.each do |check|
-        capturing_output do
-          check.run!
-        end
+      measure "Wiping DB" do
+        DataMapper.auto_migrate!
       end
     end
   end
@@ -33,9 +26,10 @@ class SentryApp < Sinatra::Base
   end
 
   post "/check" do
-    type = params[:type].constantize
-    check = type.new(:params => params["params"]) # lol
-    puts "running #{check}"
+    check_type = params["check_type"]
+    check_class = check_type.constantize
+    check = check_class.new(:params => params[check_type] || params["params"]) # lol
+    logger.info "running #{check}"
     check.run!
     redirect "/"
   end
@@ -49,7 +43,23 @@ class SentryApp < Sinatra::Base
       end
 #      Delayed::Worker.new.work_off  # this would do only the ones that need it
     end
-    puts x
+    logger.info x
+    redirect "/"
+  end
+
+  get "/sample" do
+    checks = [
+            Fetch.create(:params => {"url" => "http://notarealhost.foo"}),
+            Fetch.create(:params => {:url => "http://google.com"}),
+            Fetch.create(:params => {:url => "http://cohuman.com/home"}),
+    ]
+    measure "adding sample data" do
+      checks.each do |check|
+        capturing_output do
+          check.run!
+        end
+      end
+    end
     redirect "/"
   end
 end

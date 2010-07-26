@@ -1,33 +1,11 @@
-class Main < Widget
+class Main < Erector::Widgets::Page
   needs :checks
 
-  def new_check(check_type, params = {})
-    div :class => "new" do
-      h3 check_type
-      form :action => "/check", :method => "post" do
-        input :type => "hidden", :name => "type", :value => check_type
-        unless params.empty?
-          table do
-            params.each_pair do |param_name, param_value|
-              tr do
-                th param_name
-                td do
-                  input :type => "text", :name => "params[#{param_name}]", :value => param_value
-                end
-              end
-            end
-          end
-        end
-        input :type => :submit, :value => "Check Now"
-      end
-    end
+  def page_title
+    "sentry"
   end
 
-  def content
-    head do
-      title "Sentry"
-
-      style <<-STYLE
+  external :style, <<-STYLE
 /* reset.css from http://www.ejeliot.com/blog/85 */
 body{padding:0;margin:0;font:13px Arial,Helvetica,Garuda,sans-serif;*font-size:small;*font:x-small;}
 h1,h2,h3,h4,h5,h6,ul,li,em,strong,pre,code{padding:0;margin:0;line-height:1em;font-size:100%;font-weight:normal;font-style: normal;}
@@ -35,11 +13,13 @@ table{font-size:inherit;font:100%;}
 ul{list-style:none;}
 img{border:0;}
 p{margin:1em 0;}
+table { border-spacing: 0px 0px; border-collapse: collapse; }
 
 /* sentry main page */
 body{ padding: 1em; }
 h1 { font-size: 14pt; margin-top: .5em; margin-bottom: .25em; }
-table { border-spacing: 0px 0px; border-collapse: collapse; }
+
+/* styled tables */
 td, th { border: 2px solid gray; }
 td.param, th.param { border: 1px solid gray; }
 td.param { width: 100%; }
@@ -48,22 +28,34 @@ td.ok { color: green; }
 td.failed { color: red; }
 th { background-color: #EEE; text-align: left; }
 
-div.new { clear: both; float: right; margin: 0 2em 1em; padding: 1em; border: 2px solid blue; }
+/* magic buttons */
+div.buttons { float: right; margin: 0 2em 1em; padding: 1em; border: 2px solid blue; background: #EEEEFF; }
+div.buttons ul { list-style-type: none; }
+div.buttons li { display: inline; margin: .5em; }
+div.buttons form { display: inline; }
       STYLE
-    end
 
-    new_check("Fetch", :url => "http://www.google.com")
-    new_check("Countdown", :sec => 10)
-    new_check("Send", :to => "nobody@example.com")
-    new_check("NewTask")
+  def body_content
 
-    div :class => "new" do
-      form :action => "/work", :method => "get" do
-        input :type => :submit, :value => "Work"
+    h1 "sentry"
+
+    div :class => "buttons" do
+      h3 "magic buttons:"
+      ul do
+        li do
+          form :action => "/work", :method => "get" do
+            input :type => :submit, :value => "Work"
+          end
+          li do
+            form :action => "/sample", :method => "get" do
+              input :type => :submit, :value => "Sample"
+            end
+          end
+        end
       end
     end
 
-    h1 "sentry"
+    h1 "checks"
 
     table do
       tr do
@@ -94,5 +86,9 @@ div.new { clear: both; float: right; margin: 0 2em 1em; padding: 1em; border: 2p
         end
       end
     end
+
+    widget NewCheck
+
   end
+
 end
