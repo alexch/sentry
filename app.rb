@@ -4,7 +4,7 @@ require "sinatra"
 class SentryApp < Sinatra::Base
   set :app_file, __FILE__
   set :root, File.dirname(__FILE__)
-  
+
   configure :production do
     DataMapper::Logger.new($stdout, :debug)
   end
@@ -31,9 +31,16 @@ class SentryApp < Sinatra::Base
   post "/check" do
     check_type = params["check_type"]
     check_class = check_type.constantize
-    check = check_class.new(:params => params[check_type] || params["params"]) # lol
-    logger.info "running #{check}"
-    check.run!
+    check_params = params[check_type] || params["params"]
+
+    if params[:schedule] && params[:schedule].to_i > 0
+      checker = Checker.create(:check_type => check_type, :params => check_params)
+      checker.perform
+    else
+      check = check_class.new(:params => check_params) # lol
+      check.run!
+    end
+
     redirect "/"
   end
 

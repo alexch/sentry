@@ -30,7 +30,7 @@ describe "app" do
     it "creates a check" do
       post "/check", "check_type" => "Win",
                      "params[foo]" => "bar"
-      check = Win.last
+      check = Check.last
       check.should be_a(Win)
       check.param("foo").should == "bar"
     end
@@ -39,7 +39,7 @@ describe "app" do
       post "/check", "check_type" => "Win",
                      "Win[foo]" => "bar",
                      "Lose[foo]" => "boo"
-      check = Win.last
+      check = Check.last
       check.should be_a(Win)
       check.param("foo").should == "bar"
     end
@@ -48,13 +48,24 @@ describe "app" do
       post "/check", "check_type" => "Win",
                      "params[foo]" => "bar",
                      "schedule" => ""
-      check = Win.last
+      check = Check.last
       check.should be_a(Win)
       check.param("foo").should == "bar"
     end
 
     it "creates a checker if a schedule is provided" do
+      post "/check", "check_type" => "Win",
+                     "params[foo]" => "bar",
+                     "schedule" => "1"
 
+      check = Check.last
+      check.should be_a(Win)
+      check.param("foo").should == "bar"
+
+      checker = Checker.last
+      checker.check_type.should == "Win"
+      checker.check_class.should == Win
+      checker.schedule.should == 1
     end
   end
 end

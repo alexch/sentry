@@ -31,7 +31,7 @@ class NewTask < Check
             :subject => subject,
             :body => subject
     ).deliver
-    run_in(wait_for.seconds)
+    run_again(wait_for.seconds)
     PENDING
   end
 

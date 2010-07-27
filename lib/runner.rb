@@ -4,18 +4,28 @@
 #
 # todo: test this object independently
 class Runner
-  def initialize(resource, time, method = nil)
+
+  def self.enqueue(resource, time = 0, method = nil)
+    runner = Runner.new(resource, method)
+    Delayed::Job.enqueue(runner, 0, time.from_now)
+  end
+
+  def initialize(resource, method = nil)
     resource.save if resource.id.nil?
+    @resource_class = resource.class
     @resource_id = resource.id
-    @method = method || :run!
-    Delayed::Job.enqueue(self, 0, time.from_now)
+    @method = method || :perform
+  end
+
+  def resource
+    @resource_class.get(@resource_id)
   end
 
   def perform
-    resource = Check.get(@resource_id)
     if resource.nil?
       logger.error("Couldn't find resource##{@resource_id.inspect}")
     else
+#      puts "Running #{@resource_class}##{@method}"
       resource.send @method
     end
   end

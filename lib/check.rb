@@ -32,6 +32,7 @@ class Check
   end
 
   def run!
+    logger.info "checking #{self}"
     begin
       self.outcome = run || Check::OK
     rescue Exception => e
@@ -47,8 +48,8 @@ class Check
   end
 
   # todo: test (independently of countdown_spec)
-  def run_in(time, method = nil)
-    Runner.new(self, time, method)
+  def run_again(time, method = :run!)
+    Runner.enqueue(self, time, method)
   end
 
   #todo: run_at
