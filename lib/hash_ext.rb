@@ -46,4 +46,13 @@ class Hash
     self
   end
 
+  # todo: test
+  def -(other_hash)
+    result = dup
+    other_hash.keys.each do |key|
+      result.delete(key)
+    end
+    result
+  end
+
 end

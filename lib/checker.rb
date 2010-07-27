@@ -9,7 +9,7 @@ class Checker
   property :check_type, String, :required => true
   property :schedule, Integer, :required => true, :default => 1
 
-  has n, :checks, :order => [ :created_at.desc ]
+  has n, :checks, :order => [:created_at.desc]
 
   def perform
     raise UnsavedChecker if new?
@@ -33,5 +33,17 @@ class Checker
 
   def check_class
     check_type.constantize
+  end
+
+  def schedule_description
+    "every " +
+      case schedule
+        when 1
+          "minute"
+        when 60
+          "hour"
+        else
+          "#{schedule} minutes"
+      end
   end
 end

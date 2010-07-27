@@ -56,7 +56,7 @@ describe "app" do
     it "creates a checker if a schedule is provided" do
       post "/check", "check_type" => "Win",
                      "params[foo]" => "bar",
-                     "schedule" => "1"
+                     "schedule" => "60"
 
       check = Check.last
       check.should be_a(Win)
@@ -65,7 +65,7 @@ describe "app" do
       checker = Checker.last
       checker.check_type.should == "Win"
       checker.check_class.should == Win
-      checker.schedule.should == 1
+      checker.schedule.should == 60
     end
   end
 

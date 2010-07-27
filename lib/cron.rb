@@ -28,13 +28,12 @@ class Cron
 
   def perform
     runnable_checkers.each do |checker|
-      puts "Cron enqueuing #{checker.inspect}"
+      logger.info "Cron enqueuing #{checker.inspect}"
       Runner.enqueue(checker)
     end
     schedule
   end
 
-  # todo: test
   def schedule
     job = Runner.enqueue(self, 1.minute)
     self.job_id = job.id

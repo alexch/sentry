@@ -5,7 +5,7 @@ class SentryApp < Sinatra::Base
   set :app_file, __FILE__
   set :root, File.dirname(__FILE__)
   enable :method_override
-  
+
   configure :production do
     DataMapper::Logger.new($stdout, :debug)
   end
@@ -26,19 +26,21 @@ class SentryApp < Sinatra::Base
   end
 
   get "/" do
-    Main.new(:checks => Check.all).to_pretty
+    checks = Check.all(:order => [:created_at.desc])
+    Main.new(:checks => checks).to_pretty
   end
 
   post "/check" do
+    # this method is a bit confusing due to the two meanings of "params"
     check_type = params["check_type"]
     check_class = check_type.constantize
     check_params = params[check_type] || params["params"]
 
     if params[:schedule] && params[:schedule].to_i > 0
-      checker = Checker.create(:check_type => check_type, :params => check_params)
+      checker = Checker.create(:check_type => check_type, :schedule => params[:schedule], :params => check_params)
       checker.perform
     else
-      check = check_class.new(:params => check_params) # lol
+      check = check_class.new(:params => check_params)
       check.run!
     end
 
@@ -62,12 +64,21 @@ class SentryApp < Sinatra::Base
     checks = [
             Fetch.create(:params => {"url" => "http://notarealhost.foo"}),
             Fetch.create(:params => {:url => "http://google.com"}),
-            Fetch.create(:params => {:url => "http://cohuman.com/home"}),
+    ]
+    checkers = [
+            Checker.create(:check_type => "Fetch", :params => {:url => "http://cohuman.com/home"}),
     ]
     measure "adding sample data" do
       checks.each do |check|
         capturing_output do
           check.run!
+        end
+      end
+      checkers.each do |checker|
+        capturing_output do
+          # make a few, for history
+          checker.perform
+          checker.perform
         end
       end
     end

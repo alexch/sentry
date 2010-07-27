@@ -72,6 +72,37 @@ function log(message){
     end
   end
 
+  def nowrap(x)
+    span x, :style => "white-space:nowrap;"
+  end
+
+  def time(t)
+    nowrap t.strftime("%Y-%m-%d")
+    text " "
+    nowrap t.strftime("%H:%M:%S")
+    text " "
+    nowrap t.strftime("%Z")
+  end
+
+
+  def check_run_cells(check)
+    td { time check.created_at }
+    td :class => check.outcome do
+      text check.outcome
+    end
+    td { text check.reason }
+  end
+
+  def params_table(params)
+    params.each_pair do |key, value|
+      table :width => "100%" do
+        tr do
+          th(:class => "param") { text key }
+          td(:class => "param") { text value }
+        end
+      end
+    end
+  end
 
   def body_content
 
@@ -107,36 +138,55 @@ function log(message){
     end
 
     h1 "sentry"
-    br
 
-    h1 "checks"
+    h1 "checks", :style => "clear:both;"
     table do
       tr do
         th { text "type" }
         th { text "params" }
-        th { text "created" }
+        th { text "run at" }
         th { text "outcome" }
         th { text "reason" }
+        th { text "schedule" }
+        th { text "next run" }
       end
+
+      encountered_checkers = []
       @checks.each do |check|
+        checker = check.checker
+        if check.checker
+          next if encountered_checkers.include?(checker)
+          encountered_checkers << checker
+        end
+
         tr do
           td { text check.class.name }
           td do
-            check.params.each_pair do |key, value|
-              table :width => "100%" do
-                tr do
-                  th(:class => "param") { text key }
-                  td(:class => "param") { text value }
-                end
-              end
+            params_table(check.params)
+          end
+          check_run_cells(check)
+          if checker
+            td checker.schedule_description
+            td do
+              time checker.next_run_at
             end
           end
-          td { text check.created_at }
-          td :class => check.outcome do
-            text check.outcome
-          end
-          td { text check.reason }
         end
+
+        if check.checker
+          # history rows
+          checker.checks.each do |old_check|
+            next if old_check == check
+            tr do
+              td
+              td do
+                params_table(old_check.params - checker.params) # only show the non-standard params for old checks
+              end
+              check_run_cells(old_check)
+            end
+          end
+        end
+
       end
     end
 
