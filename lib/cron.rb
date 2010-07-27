@@ -28,26 +28,37 @@ class Cron
 
   def perform
     runnable_checkers.each do |checker|
+      puts "Cron enqueuing #{checker.inspect}"
       Runner.enqueue(checker)
     end
+    schedule
   end
 
-  def start
+  # todo: test
+  def schedule
     job = Runner.enqueue(self, 1.minute)
     self.job_id = job.id
     save
-    perform
+    job
+  end
+
+  def start
+    unless job
+      perform
+    end
     job
   end
 
   def stop
-    # todo: be smart if the job is currently running
-    if job.locked_at
-      logger.warning("Job #{job_id} is locked")
+    if job
+      # todo: be smart if the job is currently running
+      if job.locked_at
+        logger.warning("Job #{job_id} is locked")
+      end
+      job.destroy
+      self.job_id = nil
+      save
     end
-    job.destroy
-    self.job_id = nil
-    save
   end
 
 end

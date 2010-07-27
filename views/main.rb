@@ -78,9 +78,24 @@ function log(message){
     div :class => "buttons" do
       h3 "magic buttons:"
       ul do
+        if Cron.summon.job.nil?
+          li do
+            form :action => "/cron", :method => "post" do
+              input :type => "hidden", :name => "_method", :value => "put"
+              input :type => :submit, :value => "Start Cron"
+            end
+          end
+        else
+          li do
+            form :action => "/cron", :method => "post" do
+              input :type => "hidden", :name => "_method", :value => "delete"
+              input :type => :submit, :value => "Stop Cron"
+            end
+          end
+        end
         li do
           form :action => "/work", :method => "get" do
-            input :type => :submit, :value => "Work"
+            input :type => :submit, :value => "Work Off"
           end
         end
         li do
@@ -124,7 +139,7 @@ function log(message){
         end
       end
     end
-    
+
     br
     widget NewCheck
 

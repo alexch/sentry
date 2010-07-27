@@ -4,7 +4,8 @@ require "sinatra"
 class SentryApp < Sinatra::Base
   set :app_file, __FILE__
   set :root, File.dirname(__FILE__)
-
+  enable :method_override
+  
   configure :production do
     DataMapper::Logger.new($stdout, :debug)
   end
@@ -70,6 +71,16 @@ class SentryApp < Sinatra::Base
         end
       end
     end
+    redirect "/"
+  end
+
+  put "/cron" do
+    Cron.summon.start
+    redirect "/"
+  end
+
+  delete "/cron" do
+    Cron.summon.stop
     redirect "/"
   end
 end

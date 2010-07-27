@@ -10,11 +10,13 @@ class Runner
     Delayed::Job.enqueue(runner, 0, time.from_now)
   end
 
+  attr_reader :method_name
+  
   def initialize(resource, method = nil)
     resource.save if resource.id.nil?
     @resource_class = resource.class
     @resource_id = resource.id
-    @method = method || :perform
+    @method_name = method || :perform
   end
 
   def resource
@@ -25,8 +27,8 @@ class Runner
     if resource.nil?
       logger.error("Couldn't find resource##{@resource_id.inspect}")
     else
-#      puts "Running #{@resource_class}##{@method}"
-      resource.send @method
+#      puts "Running #{@resource_class}##{@method_name}"
+      resource.send @method_name
     end
   end
 end

@@ -3,16 +3,20 @@ require "#{here}/spec_helper"
 
 describe Cron do
   include DelayedJobSpecHelper
+  attr_reader :cron
 
   before do
     @now = Time.now
     Time.stub!(:now).and_return(@now)
 
     Checker.all.destroy
+    Delayed::Job.all.destroy
 
     @never_run = Checker.create(:check_type => "Win")
     pretend_run_at(@run_recently = Checker.create(:check_type => "Win"), 10.seconds.ago)
     pretend_run_at(@run_a_while_ago = Checker.create(:check_type => "Win"), 2.minutes.ago)
+
+    @cron = Cron.summon
   end
 
   def pretend_run_at(checker, time)
@@ -37,11 +41,15 @@ describe Cron do
 
   describe '#perform' do
     it "schedules runs for all relevant checks" do
-      cron = Cron.summon
-      Delayed::Job.all.destroy
-      job = cron.perform
-      Delayed::Job.all.count.should == 2
-      work_off # runs all jobs
+      cron.perform
+
+      Delayed::Job.all.each do |job|
+        unless job.payload_object.resource == cron
+          job.payload_object.perform
+          job.destroy
+        end
+      end
+
       [@never_run, @run_a_while_ago].each do |checker|
         checker.reload
         checker.last_run_at.should_not be_nil
@@ -50,34 +58,52 @@ describe Cron do
     end
   end
 
-  describe "tick tock" do
-    attr_reader :cron
-    before do
-      Delayed::Job.all.destroy      
-      @cron = Cron.summon
+  def should_run_cron_in_a_minute(job)
+    job.should_not be_nil
+    job.run_at.should be_close(Time.now + 1.minute, 0.001)
+    runner = job.payload_object
+    runner.resource.should == cron
+    runner.method_name.should == :perform
+  end
+
+  describe '#start' do
+    it "is idempotent" do
+      pending
     end
 
-    it "starts" do
+    it "schedules" do
       cron.job.should be_nil
       job = cron.start
-      cron.job.should_not be_nil
       cron.job.should == job
       cron.reload.job.should == job
-      job.payload_object.resource.should == cron
+      should_run_cron_in_a_minute(job)
     end
 
-    it "performs on start" do
+    it "performs (scheduling all runnable checks)" do
       cron.start
       Delayed::Job.all.count.should == 3 # runnable_jobs + cron repeater
     end
+  end
 
-    it "stops" do
+  it '#schedule' do
+    cron.schedule
+    Delayed::Job.all.count.should == 1
+    job = cron.reload.job
+    should_run_cron_in_a_minute(job)
+  end
+
+  describe '#stop' do
+    it "is idempotent" do
+      pending
+    end
+
+    it "removes the job" do
       cron.start
       cron.stop
+      cron.reload.job.should be_nil
       Delayed::Job.all.each do |job|
         job.payload_object.resource.should_not == cron
       end
     end
   end
-
 end

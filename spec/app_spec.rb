@@ -68,4 +68,16 @@ describe "app" do
       checker.schedule.should == 1
     end
   end
+
+  describe "cron" do
+    it "PUT /cron" do
+      put "/cron"
+      Cron.summon.job.should_not be_nil
+    end
+
+    it "DELETE /cron" do
+      delete "/cron"
+      Cron.summon.job.should be_nil
+    end
+  end
 end
