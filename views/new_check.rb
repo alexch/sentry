@@ -16,7 +16,7 @@ function showSelectedType(selectElement) {
 
 // do it on load
 showSelectedType(newCheckTypeSelector);
-  
+
 // do it on change
 newCheckTypeSelector.change(function(event) {
   // annoying -- when this is called no option is selected
@@ -95,7 +95,7 @@ newCheckTypeSelector.change(function(event) {
   end
 
   def content
-    h1 "new check"
+    h2 "new check"
 
     form :method => "post", :action => "/check" do
       table :class => "new_check" do

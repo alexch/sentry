@@ -17,7 +17,8 @@ table { border-spacing: 0px 0px; border-collapse: collapse; }
 
 /* sentry main page */
 body{ padding: 1em; }
-h1 { font-size: 14pt; margin-top: .5em; margin-bottom: .25em; }
+h1 { font-size: 18pt; margin-top: .5em; margin-bottom: .25em; }
+h2 { font-size: 14pt; margin-top: .5em; margin-bottom: .25em; }
 
 /* styled tables */
 td, th { border: 2px solid gray; }
@@ -27,6 +28,7 @@ td, th { padding: 2px; }
 td.ok { color: green; }
 td.failed { color: red; }
 th { background-color: #EEE; text-align: left; }
+td.outcome { font-weight: bold; padding: 2px 4px; }
 
 /* magic buttons */
 div.buttons { float: right; margin: 0 2em 1em; padding: 1em; border: 2px solid blue; background: #EEEEFF; }
@@ -87,7 +89,7 @@ function log(message){
 
   def check_run_cells(check)
     td { time check.created_at }
-    td :class => check.outcome do
+    td :class => ["outcome", check.outcome] do
       text check.outcome
     end
     td { text check.reason }
@@ -139,7 +141,7 @@ function log(message){
 
     h1 "sentry"
 
-    h1 "checks", :style => "clear:both;"
+    h2 "checks", :style => "clear:both;"
     table do
       tr do
         th { text "type" }
@@ -175,7 +177,7 @@ function log(message){
 
         if check.checker
           # history rows
-          checker.checks.each do |old_check|
+          checker.checks[0..4].each do |old_check|
             next if old_check == check
             tr do
               td

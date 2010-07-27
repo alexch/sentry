@@ -77,8 +77,7 @@ class SentryApp < Sinatra::Base
       checkers.each do |checker|
         capturing_output do
           # make a few, for history
-          checker.perform
-          checker.perform
+         2.times { checker.perform }
         end
       end
     end
