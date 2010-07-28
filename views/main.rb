@@ -35,6 +35,7 @@ td.param { width: 100%; }
 td.ok { color: green; }
 td.failed { color: red; }
 td.outcome { font-weight: bold; padding: 2px 4px; }
+tr.divider td { border: none; background-color: #ededff; height: 8px; }
 
 /* magic buttons */
 div.buttons { float: right; margin: 0 2em 1em; padding: 1em; border: 2px solid blue; background: #EEEEFF; }
@@ -154,14 +155,20 @@ function log(message){
 
     h2 "checks", :style => "clear:both;"
     table do
+      columns = [
+        "type",
+        "params",
+        "run at",
+        "outcome",
+        "reason",
+        "schedule",
+        "next run",
+      ]
+
       tr do
-        th { text "type" }
-        th { text "params" }
-        th { text "run at" }
-        th { text "outcome" }
-        th { text "reason" }
-        th { text "schedule" }
-        th { text "next run" }
+        columns.each do |column|
+          th { text column }
+        end
       end
 
       encountered_checkers = []
@@ -170,6 +177,10 @@ function log(message){
         if check.checker
           next if encountered_checkers.include?(checker)
           encountered_checkers << checker
+        end
+
+        tr :class => :divider do
+          td :colspan => columns.length
         end
 
         tr do
