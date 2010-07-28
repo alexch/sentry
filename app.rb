@@ -8,20 +8,24 @@ class SentryApp < Sinatra::Base
 
   configure :production do
     DataMapper::Logger.new($stdout, :debug)
+    measure "Upgrading DB" do
+      DataMapper.auto_upgrade!
+    end
   end
 
-  configure do
-    DataMapper.setup(:default, ENV['DATABASE_URL'] || 'sqlite3::memory:')
+  configure :test do
+    DataMapper.setup(:default, 'sqlite3::memory:')
+    measure "Wiping DB" do
+      DataMapper.auto_migrate!
+    end
+  end
 
-    # workaround for bug http://datamapper.lighthouseapp.com/projects/20609/tickets/1289-autoupgrades-fail-on-sti-models
-    if ENV['DATABASE_URL']
-      measure "Upgrading DB" do
-        DataMapper.auto_upgrade!
-      end
-    else
-      measure "Wiping DB" do
-        DataMapper.auto_migrate!
-      end
+  configure :development do
+    DataMapper.setup(:default, 'sqlite3:development.db')
+    # unfortunately, we can't preserve data between dev server runs, due to
+    # bug http://datamapper.lighthouseapp.com/projects/20609/tickets/1289-autoupgrades-fail-on-sti-models
+    measure "Wiping DB" do
+      DataMapper.auto_migrate!
     end
   end
 
@@ -47,16 +51,18 @@ class SentryApp < Sinatra::Base
     redirect "/"
   end
 
+  # magic
+
   get "/work" do
-    x= capturing_output do
+#    x= capturing_output do
       Delayed::Job.all.each do |job|
         puts "invoking #{job.inspect}"
         job.invoke_job
         job.destroy
       end
 #      Delayed::Worker.new.work_off  # this would do only the ones that need it
-    end
-    logger.info x
+#    end
+#    logger.info x
     redirect "/"
   end
 
@@ -91,6 +97,11 @@ class SentryApp < Sinatra::Base
 
   delete "/cron" do
     Cron.summon.stop
+    redirect "/"
+  end
+
+  get "/wipe" do
+    DataMapper.auto_migrate!
     redirect "/"
   end
 end

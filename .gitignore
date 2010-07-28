@@ -2,3 +2,5 @@
 .bundle
 log
 config/env.rb
+*.db
+*.db-journal

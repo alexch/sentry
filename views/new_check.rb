@@ -58,11 +58,11 @@ newCheckTypeSelector.change(function(event) {
     tr :class => ["params_row", check_type] do
       th "params"
       td do
-        check_class.new.default_params.each_pair do |param_name, param_value|
-          table :class => "#{check_type}_params" do
+        table :class => "#{check_type}_params" do
+          check_class.new.default_params.each_pair do |param_name, param_value|
             tr do
-              th param_name
-              td do
+              th param_name, :class => "param"
+              td :class => "param" do
                 input :name => "#{check_type}[#{param_name}]", :value => param_value
               end
             end

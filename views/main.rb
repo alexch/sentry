@@ -17,17 +17,23 @@ table { border-spacing: 0px 0px; border-collapse: collapse; }
 
 /* sentry main page */
 body{ padding: 1em; }
-h1 { font-size: 18pt; margin-top: .5em; margin-bottom: .25em; }
-h2 { font-size: 14pt; margin-top: .5em; margin-bottom: .25em; }
+h1, h2 {
+  margin-top: .5em; margin-bottom: .25em; padding: .25em .25em 0;
+  border-bottom: 1px solid #222222; background: #EEEEFF;
+}
+h1 { font-size: 18pt; }
+h2 { font-size: 14pt; }
 
 /* styled tables */
 td, th { border: 2px solid gray; }
+td, th { padding: 2px; }
+th { background-color: #EEE; text-align: left; }
+
+/* check table */
 td.param, th.param { border: 1px solid gray; }
 td.param { width: 100%; }
-td, th { padding: 2px; }
 td.ok { color: green; }
 td.failed { color: red; }
-th { background-color: #EEE; text-align: left; }
 td.outcome { font-weight: bold; padding: 2px 4px; }
 
 /* magic buttons */
@@ -96,8 +102,8 @@ function log(message){
   end
 
   def params_table(params)
-    params.each_pair do |key, value|
-      table :width => "100%" do
+    table :width => "100%" do
+      params.each_pair do |key, value|
         tr do
           th(:class => "param") { text key }
           td(:class => "param") { text value }
@@ -128,12 +134,17 @@ function log(message){
         end
         li do
           form :action => "/work", :method => "get" do
-            input :type => :submit, :value => "Work Off"
+            input :type => :submit, :value => "Work Jobs"
           end
         end
         li do
           form :action => "/sample", :method => "get" do
             input :type => :submit, :value => "Sample"
+          end
+        end
+        li do
+          form :action => "/wipe", :method => "get" do
+            input :type => :submit, :value => "Wipe DB"
           end
         end
       end

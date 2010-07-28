@@ -56,15 +56,19 @@ Delayed::Worker.backend = :data_mapper
 DataMapper.finalize
 DataMapper::Model.raise_on_save_failure = true
 
-
 # utility methods
 def capturing_output
-  original_stdout = $stdout
-  $stdout = StringIO.new
+  original = $stdout
+  captured = StringIO.new
+  $stdout = captured
   yield
-  $stdout.string
+  captured.string
 ensure
-  $stdout = original_stdout
+  # allow nesting
+  if original.is_a? StringIO
+    original << captured.string
+  end
+  $stdout = original
 end
 
   # workaround for activesupport vs. json_pure vs. Ruby 1.8 glitch

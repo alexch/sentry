@@ -1,10 +1,11 @@
 # todo:
-# fetch from site (JSON GET)
+# fetch content from site (JSON GET) in parallel; fail if either email or content is missing
 # check that comment was added
+# unit test
 class NewTask < Check
 
   def default_params
-    super.merge("wait_for" => 60)
+    super.merge("period" => 30, "limit" => 600, "to" => "new@cohuman.com")
   end
 
   def subject
@@ -12,7 +13,7 @@ class NewTask < Check
   end
 
   def run
-    # todo: allow "run_in" to take a method name to be passed in to run!, so it can invoke it and then catch errors
+    # todo: allow "run_again" to take a method name to be passed in to run!, so we don't need this switch
     if param("key")
       check_inbox
     else
@@ -20,34 +21,46 @@ class NewTask < Check
     end
   end
 
-  def wait_for
-    param("wait_for").to_i.seconds
+  def period
+    param("period").to_i
   end
 
   def send_email
     param("key", "#{Time.now.to_i}/#{rand(10000)}")
     OutgoingMessage.new(
-            :to => "new@cohuman.com",
+            :to => param("to"),
             :subject => subject,
             :body => subject
     ).deliver
-    run_again(wait_for.seconds)
+    run_again(period.seconds)
     PENDING
+  end
+
+  def duration
+    (Time.now - created_at).to_i
+  end
+
+  def limit
+    param("limit").to_i
   end
 
   def check_inbox
     ok = false
     Receiver.new.scan do |message|
       if message.subject.include? param("key")
-        ok = true
         message.delete
+        self.reason = "received confirmation email after #{duration} seconds"
+        return OK
       end
     end
-    if ok
-      OK
+
+    self.reason = "did not receive confirmation email after #{duration} seconds"
+    if duration >= limit
+      return FAILED
     else
-      self.reason = "did not receive confirmation email within #{wait_for} seconds"
-      FAILED
+      run_again(period.seconds)
+      return PENDING
     end
   end
+
 end

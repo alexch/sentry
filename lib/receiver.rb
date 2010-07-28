@@ -9,7 +9,7 @@ class Receiver
   include ExceptionReporting
 
   attr_reader :config, :debug
-  
+
   def initialize(opts = {}, &block)
     @config = !!opts[:config]
     @debug = !!opts[:debug]
@@ -40,6 +40,7 @@ class Receiver
       n = messages.size
       c = e = 0
       messages.each do |message_id|
+        received_message = nil
         rfc822 = imap.fetch(message_id, "RFC822")[0].attr["RFC822"]
         begin
           received_message = receive(rfc822)
@@ -51,7 +52,7 @@ class Receiver
           say "Error processing message #{message_id}: #{exception.class.name}: #{exception.message}"
           e += 1
         ensure
-          if received_message.delete?
+          if received_message && received_message.delete?
             say "Deleting message #{message_id}"
             imap.store(message_id, "+FLAGS", [:Deleted])
           end
@@ -65,7 +66,7 @@ class Receiver
     rescue Net::IMAP::NoResponseError, Net::IMAP::ByeResponseError, Errno::ENOTCONN
       # ignore
     rescue Exception => e
-      log_exception(e)
+      report_exception(e)
     end
     say "Processed #{c.inspect} of #{n.inspect} emails received (#{e} errors)."
   end
@@ -89,5 +90,5 @@ class Receiver
   def say message
     puts "#{Time.now} - #{message}" # was: logger.info(message) but that wasn't working
   end
-  
+
 end

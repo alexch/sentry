@@ -1,5 +1,10 @@
+todo
+-----
+
+notifications via exceptional
+notifications via email (state change)
+stop/restart a check
 
 declared params, with description and default, per class
 inherited declared params
 typed params (e.g. int)
-
