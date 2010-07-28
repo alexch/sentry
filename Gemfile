@@ -14,7 +14,8 @@ gem "dm-observer"
 gem "dm-aggregates"
 gem "dm-validations"
 gem "dm-postgres-adapter"
-gem "delayed_job", :git => "git://github.com/collectiveidea/delayed_job.git"
+gem "delayed_job", "2.0.3"
+    # :git => "git://github.com/collectiveidea/delayed_job.git"
 
 group :development do
   gem "dm-sqlite-adapter"

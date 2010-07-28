@@ -11,16 +11,16 @@ class Runner
   end
 
   attr_reader :method_name
-  
+
   def initialize(resource, method = nil)
     resource.save if resource.id.nil?
-    @resource_class = resource.class
+    @resource_class_name = resource.class.name
     @resource_id = resource.id
     @method_name = method || :perform
   end
 
   def resource
-    @resource_class.get(@resource_id)
+    @resource_class_name.constantize.get(@resource_id)
   end
 
   def perform
