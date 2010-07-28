@@ -8,6 +8,7 @@ class SentryApp < Sinatra::Base
 
   configure :production do
     DataMapper::Logger.new($stdout, :debug)
+    DataMapper.setup(:default, ENV['DATABASE_URL'])
     measure "Upgrading DB" do
       DataMapper.auto_upgrade!
     end
