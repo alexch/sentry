@@ -4,8 +4,10 @@ $:.unshift ROOT
 $:.unshift "#{ROOT}/lib"
 Dir.chdir(ROOT)
 
-require 'rubygems'
-require 'bundler'
+unless Object.const_defined?(:Bundler)
+  require 'rubygems'
+  require 'bundler'
+end
 Bundler.setup
 
 require 'dm-core'

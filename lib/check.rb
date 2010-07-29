@@ -32,15 +32,16 @@ class Check
   end
 
   def run!
-    logger.info "checking #{self}"
-    begin
-      self.outcome = run || Check::OK
-    rescue Exception => e
-      self.outcome = FAILED
-      self.reason ||= e.to_s
-      report_exception(e)
+    measure "checking #{self}" do
+      begin
+        self.outcome = run || Check::OK
+      rescue Exception => e
+        self.outcome = FAILED
+        self.reason ||= e.to_s
+        report_exception(e)
+      end
+      save
     end
-    save
   end
 
   def run

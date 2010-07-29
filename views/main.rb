@@ -38,10 +38,10 @@ td.outcome { font-weight: bold; padding: 2px 4px; }
 tr.divider td { border: none; background-color: #ededff; height: 8px; }
 
 /* magic buttons */
-div.buttons { float: right; margin: 0 2em 1em; padding: 1em; border: 2px solid blue; background: #EEEEFF; }
-div.buttons ul { list-style-type: none; }
-div.buttons li { display: inline; margin: .5em; }
-div.buttons form { display: inline; }
+div.magic_buttons { float: right; margin: 0 2em 1em; padding: 1em; border: 2px solid blue; background: #EEEEFF; }
+div.magic_buttons ul { list-style-type: none; }
+div.magic_buttons li { display: inline; margin: .5em; }
+div.magic_buttons form { display: inline; }
   STYLE
 
   external :script, <<-SCRIPT
@@ -113,9 +113,8 @@ function log(message){
     end
   end
 
-  def body_content
-
-    div :class => "buttons" do
+  def magic_buttons
+    div :class => "magic_buttons" do
       h3 "magic buttons:"
       ul do
         if Cron.summon.job.nil?
@@ -150,19 +149,19 @@ function log(message){
         end
       end
     end
+  end
 
-    h1 "sentry"
-
+  def checks_table
     h2 "checks", :style => "clear:both;"
     table do
       columns = [
-        "type",
-        "params",
-        "run at",
-        "outcome",
-        "reason",
-        "schedule",
-        "next run",
+              "type",
+              "params",
+              "run at",
+              "outcome",
+              "reason",
+              "schedule",
+              "next run",
       ]
 
       tr do
@@ -194,26 +193,40 @@ function log(message){
             td do
               time checker.next_run_at
             end
+          else
+            td "just once", :colspan => 2
           end
         end
 
         if check.checker
           # history rows
-          checker.checks[0..4].each do |old_check|
-            next if old_check == check
+          history = (checker.checks[0..4]).to_a
+          puts history.inspect
+          history -= [check]
+          drew_empty_cell = false
+          history.each do |old_check|
             tr do
               td
               td do
                 params_table(old_check.params - checker.params) # only show the non-standard params for old checks
               end
               check_run_cells(old_check)
+              unless drew_empty_cell
+                td :colspan => 2, :rowspan => history.size
+              end
             end
           end
         end
 
       end
     end
+  end
 
+  def body_content
+
+    magic_buttons
+    h1 "sentry"
+    checks_table
     br
     widget NewCheck
 
