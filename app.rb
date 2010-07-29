@@ -70,10 +70,10 @@ class SentryApp < Sinatra::Base
   get "/sample" do
     checks = [
             Fetch.create(:params => {"url" => "http://notarealhost.foo"}),
-            Fetch.create(:params => {:url => "http://google.com"}),
+            Fetch.create(:params => {:url => "http://cohuman.com/home"}),
     ]
     checkers = [
-            Checker.create(:check_type => "Fetch", :params => {:url => "http://cohuman.com/home"}),
+            Checker.create(:check_type => "Fetch", :params => {:url => "http://google.com"}),
     ]
     measure "adding sample data" do
       checks.each do |check|
@@ -84,7 +84,7 @@ class SentryApp < Sinatra::Base
       checkers.each do |checker|
         capturing_output do
           # make a few, for history
-         2.times { checker.perform }
+         3.times { checker.perform }
         end
       end
     end

@@ -21,12 +21,12 @@ h1, h2 {
   margin-top: .5em; margin-bottom: .25em; padding: .25em .25em 0;
   border-bottom: 1px solid #222222; background: #EEEEFF;
 }
-h1 { font-size: 18pt; }
+h1 { font-size: 18pt; font-weight: bold; }
 h2 { font-size: 14pt; }
 
 /* styled tables */
-td, th { border: 2px solid gray; }
-td, th { padding: 2px; }
+tr { border: none; }
+td, th { border: 2px solid gray; padding: 2px; }
 th { background-color: #EEE; text-align: left; }
 
 /* check table */
@@ -35,7 +35,7 @@ td.param { width: 100%; }
 td.ok { color: green; }
 td.failed { color: red; }
 td.outcome { font-weight: bold; padding: 2px 4px; }
-tr.divider td { border: none; background-color: #ededff; height: 8px; }
+tr.divider td { border: none; background-color: #EEEEFF; height: 8px; }
 
 /* magic buttons */
 div.magic_buttons { float: right; margin: 0 2em 1em; padding: 1em; border: 2px solid blue; background: #EEEEFF; }
@@ -213,6 +213,7 @@ function log(message){
               check_run_cells(old_check)
               unless drew_empty_cell
                 td :colspan => 2, :rowspan => history.size
+                drew_empty_cell = true
               end
             end
           end
