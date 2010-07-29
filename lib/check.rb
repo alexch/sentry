@@ -39,9 +39,17 @@ class Check
         self.outcome = FAILED
         self.reason ||= e.to_s
         report_exception(e)
+        send_email(e)
       end
       save
     end
+  end
+
+  def send_email(exception)
+    message = OutgoingMessage.new(:to => Email.all.map(&:address), :subject => "check failed",
+      :body => self.to_s
+    )
+    message.deliver
   end
 
   def run

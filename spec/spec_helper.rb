@@ -22,27 +22,10 @@ Spec::Runner.configure do |config|
 
   config.before(:each) do
     OutgoingMessage.fake
-
-
-#      # --- Temporary private api use to get around rspec limitations ---
-#      @repository.scope do |repository|
-#        transaction = DataMapper::Transaction.new(repository)
-#        transaction.begin
-#        repository.adapter.push_transaction(transaction)
-#      end
-#
-#
-#    after do
-#      while @repository.adapter.current_transaction
-#        @repository.adapter.pop_transaction.rollback
-#      end
-#    end
-
-#    DB.setup  # start transaction
   end
 
   config.after(:each) do
-#    DB.teardown  # rollback transaction
+
   end
 end
 

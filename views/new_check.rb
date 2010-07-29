@@ -1,8 +1,8 @@
 class NewCheck < Widget
 
   external :jquery_ready, <<-SCRIPT
-var newCheckTable = $(".new_check");
-var newCheckTypeSelector = $(".new_check select[name=check_type]");
+var newCheckTable = $(".new_check_table");
+var newCheckTypeSelector = $(".new_check_table select[name=check_type]");
 
 function showSelectedType(selectElement) {
   log(this);
@@ -95,16 +95,19 @@ newCheckTypeSelector.change(function(event) {
   end
 
   def content
-    h2 "new check"
 
-    form :method => "post", :action => "/check" do
-      table :class => "new_check" do
-        check_type_selector_row
-        check_classes.each do |check_class|
-          params_row(check_class)
+    div :class => "new_check" do
+      h2 "new check"
+
+      form :method => "post", :action => "/check" do
+        table :class => "new_check_table" do
+          check_type_selector_row
+          check_classes.each do |check_class|
+            params_row(check_class)
+          end
+          schedule_row
+          submit_row
         end
-        schedule_row
-        submit_row
       end
     end
   end

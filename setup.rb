@@ -22,6 +22,25 @@ require "delayed_job"
 # class aliases
 Widget = Erector::Widget
 
+  # todo: test, move into Erector maybe
+  class Widget
+    def form(attrs)
+      attrs = Mash.new(attrs)
+      method = attrs[:method].to_s.downcase
+      real_method = case method
+                      when "post", "get"
+                        method
+                      else
+                        "post"
+                    end
+      attrs[:method] = real_method
+      element(:form, attrs) do
+        input :type => "hidden", :name => "_method", :value => method unless method == real_method
+        yield
+      end
+    end
+  end
+
 # Thanks http://jacobrothstein.com/delayed-job-send-later-with-run-at
 class Object
   def send_in(time, method, *args)

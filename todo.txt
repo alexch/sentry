@@ -1,15 +1,15 @@
-todo
------
-
-notifications via exceptional
-notifications via email
+features
+---------
 state change notification option for checkers
-stop/restart a check
+stop a checker
+"run now" button
+autorefresh
+All this stuff: https://www.cloudkick.com/features :-)
 
+chores
+-------
+write README
 declared params, with description and default, per class
 inherited declared params
 typed params (e.g. int)
 rename Cron to Scheduler?
-
-"run now" button
-autorefresh

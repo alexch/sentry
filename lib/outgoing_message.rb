@@ -68,7 +68,7 @@ class OutgoingMessage
   end
 
   def self.from_name
-    # todo: read 
+    # todo: read
   end
 
   def self.host=(value)
@@ -80,7 +80,7 @@ class OutgoingMessage
     "http://#{@@host}#{path}" + (params ? "?#{params.to_params}" : "")
   end
 
-  MAXIMUM_NUMBER_OF_TRIES = 2  
+  MAXIMUM_NUMBER_OF_TRIES = 2
 
   attr_reader :from, :sender, :reply_to, :subject, :bcc, :in_reply_to, :body, :category, :config
 
@@ -90,8 +90,13 @@ class OutgoingMessage
     [:from, :sender, :reply_to, :to, :bcc, :subject, :body, :in_reply_to, :category].each do |var|
       instance_variable_set("@#{var}", options[var])
     end
-    @from ||= "#{config.from} (#{OutgoingMessage.from_name})"
 
+    @from ||= if @config.from_name
+                "#{@config.from} (#{OutgoingMessage.from_name})"
+              else
+                @config.from
+              end
+    
     [:to, :subject, :body].each do |key|
       raise "missing required field '#{key}'" if options[key].nil?
     end

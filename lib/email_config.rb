@@ -55,6 +55,7 @@ class EmailConfig
       when "production"
         {
                 :from => 'sentry@cohuman.com',
+                :from_name => "Sentry",
                 :outgoing => sendgrid,
                 :incoming => hostito_imap
         }
@@ -66,7 +67,6 @@ class EmailConfig
                 :outgoing => sendgrid << {
                         :debug => true,
                         },
-#                :incoming => nil
                 :incoming => hostito_imap
         }
     end

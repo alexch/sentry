@@ -3,7 +3,7 @@ require "#{here}/spec_helper"
 
 describe Check do
   attr_reader :check
-  
+
   before do
     @check = Check.new
   end
@@ -45,11 +45,27 @@ describe Check do
       check.reason.should == "FTL"
     end
 
-    it "reports an exception" do
+    it "reports an exception on failure" do
       Exceptional::Catcher.should_receive(:handle)
       capturing_output do
         Fail.new.run!
       end
+    end
+
+    it "sends an email on failure" do
+      Email.all.destroy
+      addresses = ["alice@example.com", "bob@example.com"]
+      addresses.each do |address|
+        Email.create(:address => address)
+      end
+      capturing_output do
+        Fail.new.run!
+      end
+      OutgoingMessage.sent.size.should == 1
+      message = OutgoingMessage.sent.first
+      message.from.should == EmailConfig.get.from
+      message.to.should =~ addresses
+      message.subject.should == "check failed"
     end
 
     it "lets run call fail! on its own" do

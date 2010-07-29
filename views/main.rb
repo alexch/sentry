@@ -25,6 +25,7 @@ h1 { font-size: 18pt; font-weight: bold; }
 h2 { font-size: 14pt; }
 
 /* styled tables */
+table, td, th { vertical-align: top; }
 tr { border: none; }
 td, th { border: 2px solid gray; padding: 2px; }
 th { background-color: #EEE; text-align: left; }
@@ -35,13 +36,14 @@ td.param { width: 100%; }
 td.ok { color: green; }
 td.failed { color: red; }
 td.outcome { font-weight: bold; padding: 2px 4px; }
-tr.divider td { border: none; background-color: #EEEEFF; height: 8px; }
+tr.divider td { border: none; background-color: white; height: 8px; }
+td.divider { border: none; background-color: white; width: 8px; }
 
-/* magic buttons */
-div.magic_buttons { float: right; margin: 0 2em 1em; padding: 1em; border: 2px solid blue; background: #EEEEFF; }
-div.magic_buttons ul { list-style-type: none; }
-div.magic_buttons li { display: inline; margin: .5em; }
-div.magic_buttons form { display: inline; }
+/* controls */
+div.controls { float:right; margin: 0 2em 1em; padding: 1em; border: 2px solid blue; background: #EEEEFF; }
+div.controls ul { list-style-type: none; }
+div.controls li { display: inline; margin: .5em; }
+div.controls form { display: inline; }
   STYLE
 
   external :script, <<-SCRIPT
@@ -113,39 +115,33 @@ function log(message){
     end
   end
 
-  def magic_buttons
-    div :class => "magic_buttons" do
-      h3 "magic buttons:"
+  def button_form(label, action, method = "get")
+    form :action => action, :method => method do
+      input :type => :submit, :value => label
+    end
+  end
+
+  def controls
+    div :class => "controls" do
+      h3 "magic buttons (don't touch!)"
       ul do
         if Cron.summon.job.nil?
           li do
-            form :action => "/cron", :method => "post" do
-              input :type => "hidden", :name => "_method", :value => "put"
-              input :type => :submit, :value => "Start Cron"
-            end
+            button_form("Start Cron", "/cron", "put")
           end
         else
           li do
-            form :action => "/cron", :method => "post" do
-              input :type => "hidden", :name => "_method", :value => "delete"
-              input :type => :submit, :value => "Stop Cron"
-            end
+            button_form("Stop Cron", "/cron", "delete")
           end
         end
         li do
-          form :action => "/work", :method => "get" do
-            input :type => :submit, :value => "Work Jobs"
-          end
+          button_form("Run All Jobs", "/work")
         end
         li do
-          form :action => "/sample", :method => "get" do
-            input :type => :submit, :value => "Sample"
-          end
+          button_form("Sample", "/sample")
         end
         li do
-          form :action => "/wipe", :method => "get" do
-            input :type => :submit, :value => "Wipe DB"
-          end
+          button_form("Wipe DB", "/wipe")
         end
       end
     end
@@ -223,14 +219,22 @@ function log(message){
     end
   end
 
+  def settings
+    h2 "settings"
+    table do
+      tr do
+        td { widget NewCheck }
+        td :class => "divider"
+        td { widget Emails }
+      end
+    end
+  end
+
   def body_content
-
-    magic_buttons
+    controls
     h1 "sentry"
+    settings
     checks_table
-    br
-    widget NewCheck
-
   end
 
 end

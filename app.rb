@@ -105,4 +105,30 @@ class SentryApp < Sinatra::Base
     DataMapper.auto_migrate!
     redirect "/"
   end
+
+  include Erector::Mixin
+  
+  put "/email" do
+    begin
+      Email.create(:address => params[:address])
+      redirect "/"
+    rescue DataMapper::SaveFailureError => e
+      # todo: proper error page/widget
+      # todo: form errors in redirect?
+      erector {
+        h1 "Error"
+        ul do
+          e.resource.errors.each_pair do |property, errors|
+            li "#{property}: #{errors.join(", ")}"
+          end
+        end
+      }
+    end
+  end
+
+  delete "/email/:id" do
+    Email.get(params[:id]).destroy
+    redirect "/"
+  end
+
 end
