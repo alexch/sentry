@@ -1,5 +1,5 @@
 --- 
-hash: 576664848509cc7b55020a58966e2f211aa85d9b
+hash: 9b10c74398154ee35f6c1b59a34670cda790f23f
 sources: 
 - Rubygems: 
     uri: http://rubygems.org
@@ -57,7 +57,7 @@ specs:
 - erector: 
     version: 0.8.1
 - exceptional: 
-    version: 2.0.18
+    version: 2.0.19
 - mime-types: 
     version: "1.16"
 - polyglot: 
@@ -67,7 +67,7 @@ specs:
 - mail: 
     version: 2.2.5
 - rack: 
-    version: 1.1.0
+    version: 1.2.1
 - rack-test: 
     version: 0.5.4
 - rspec: 
@@ -86,11 +86,11 @@ dependencies:
     group: 
     - :default
   sinatra: 
-    version: = 1.0.0
+    version: ">= 0"
     group: 
     - :default
   rack: 
-    version: = 1.1.0
+    version: ">= 0"
     group: 
     - :default
   exceptional: 

@@ -5,6 +5,13 @@ stop a checker
 "run now" button
 autorefresh
 All this stuff: https://www.cloudkick.com/features :-)
+check history (more than 5 most recent checks)
+graphs
+better notification algorithms, e.g.
+    only notify on state changes (ok -> fail or fail -> ok)
+    different people are interested in different checks
+    don't email for one-off check failures, only recurring ones
+
 
 chores
 -------
