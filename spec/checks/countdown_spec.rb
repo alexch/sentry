@@ -1,5 +1,5 @@
 here = File.expand_path(File.dirname(__FILE__))
-require "#{here}/spec_helper"
+require "#{here}/../spec_helper"
 
 describe Countdown do
   it "succeeds with 0 sec remaining" do
