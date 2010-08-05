@@ -18,6 +18,8 @@ require 'dm-types/json'
 require 'exceptional'
 require 'erector'
 require "delayed_job"
+require "json/pure" # required to avoid NoMethodError - undefined method `generate' for JSON::Ext::Generator::State
+
 
 # class aliases
 Widget = Erector::Widget
