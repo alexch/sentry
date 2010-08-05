@@ -22,6 +22,7 @@ class SentryApp < Sinatra::Base
   end
 
   configure :development do
+# => "postgres://username:password@hostname/database"
     DataMapper.setup(:default, 'sqlite3:development.db')
     # unfortunately, we can't preserve data between dev server runs, due to
     # bug http://datamapper.lighthouseapp.com/projects/20609/tickets/1289-autoupgrades-fail-on-sti-models

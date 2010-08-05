@@ -6,4 +6,4 @@ Sentry is basically a Nagios clone: it runs checks every so often, and notifies 
 
 * Sentry runs on Heroku, so anyone can create their own instance for the cost of a worker (currently ~$36/mo, which is kind of steep, but might be worth it). (There's no reason it couldn't run on another server too.)
 
-* It's a good example app for Sinatra, Heroku, Erector, and TDD.
+* It's a good example app for Sinatra, Heroku, Erector, Ruby email sending and checking, and TDD.
