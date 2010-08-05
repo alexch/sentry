@@ -1,4 +1,7 @@
 class Send < Check
+  def self.description
+    "Immediately send an email from Sentry"
+  end
 
   def default_params
     super.merge(:to => "nobody@example.com")

@@ -10,8 +10,8 @@ function showSelectedType(selectElement) {
   selectedType = selectElement.val();
   log(selectedType);
 
-  newCheckTable.find('tr.params_row').hide();
-  newCheckTable.find('tr.params_row.' + selectedType).show();
+  newCheckTable.find('tr.check_specific').hide();
+  newCheckTable.find('tr.check_specific.' + selectedType).show();
 }
 
 // do it on load
@@ -53,9 +53,19 @@ newCheckTypeSelector.change(function(event) {
     end
   end
 
+  def description_row(check_class)
+    if check_class.description
+      check_type = check_class.to_s # todo: put this into Check
+      tr :class => ["check_specific", check_type] do
+        th "description"
+        td check_class.description
+      end
+    end
+  end
+
   def params_row(check_class)
-    check_type = check_class.to_s
-    tr :class => ["params_row", check_type] do
+    check_type = check_class.to_s # todo: put this into Check
+    tr :class => ["check_specific", check_type] do
       th "params"
       td do
         table :class => "#{check_type}_params" do
@@ -103,6 +113,7 @@ newCheckTypeSelector.change(function(event) {
         table :class => "new_check_table" do
           check_type_selector_row
           check_classes.each do |check_class|
+            description_row(check_class)
             params_row(check_class)
           end
           schedule_row

@@ -2,6 +2,10 @@ require 'net/http'
 require 'uri'
 
 class Fetch < Check
+  def self.description
+    "Fetch an HTTP URL; fail only if there's a network error"
+  end
+
   def default_params
     super.merge("url" => "http://example.com/")
   end

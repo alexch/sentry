@@ -1,6 +1,10 @@
 require "params"
 
 class Check
+  def self.description
+    nil
+  end
+
   include DataMapper::Resource
   include Params
   include ExceptionReporting

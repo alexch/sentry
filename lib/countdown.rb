@@ -1,4 +1,8 @@
 class Countdown < Check
+  def self.description
+    "Decrement a counter once per second (or so). Used to verify that background jobs are working."
+  end
+
   def default_params
     super.merge(:sec => 10)
   end

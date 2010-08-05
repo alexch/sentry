@@ -156,6 +156,30 @@ describe Check do
     end
   end
 
+  describe "#description" do
+
+    class Soup < Check
+      def self.description
+        "yummy"
+      end
+    end
+
+    class Sandwich < Check
+    end
+
+    it "defaults to nil" do
+      Check.description.should == nil
+    end
+
+    it "defaults to nil for subclasses" do
+      Sandwich.description.should == nil
+    end
+
+    it "can be overridden by a check class" do
+      Soup.description.should == "yummy"
+    end
+  end
+
   describe "subclasses" do
     class Overrider < Check
       def default_params

@@ -4,6 +4,10 @@
 # unit test
 class NewTask < Check
 
+  def self.description
+    "Send email to new@cohuman.com, which should create a new task. Wait for the confirmation email."
+  end
+
   def default_params
     super.merge("period" => 30, "limit" => 600, "to" => "new@cohuman.com")
   end
