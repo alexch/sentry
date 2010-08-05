@@ -24,6 +24,10 @@ h1, h2 {
 h1 { font-size: 18pt; font-weight: bold; }
 h2 { font-size: 14pt; }
 
+div > h1, div > h2 {
+  margin-top: 0;
+}
+
 /* styled tables */
 table, td, th { vertical-align: top; }
 tr { border: none; }
