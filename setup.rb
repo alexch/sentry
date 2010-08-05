@@ -2,7 +2,6 @@ unless Object.const_defined? :ROOT
 
   ROOT = File.expand_path(File.dirname(__FILE__))
   $:.unshift ROOT
-  $:.unshift "#{ROOT}/lib"
   Dir.chdir(ROOT)
 
   unless Object.const_defined?(:Bundler)
@@ -30,12 +29,13 @@ unless Object.const_defined? :ROOT
     load env
   end
 
-  ROOT_DIRS = ["lib", "views"]
+  ROOT_DIRS = ["lib", "domain", "views"]
 
-  require "lib/exception_reporting"
+#  require "lib/exception_reporting"
 
 # pre-require files underneath source root directories
   ROOT_DIRS.each do |dir|
+    $:.unshift "#{ROOT}/#{dir}"
     Dir["#{dir}/**/*.rb"].sort.each do |file|
       require file
     end

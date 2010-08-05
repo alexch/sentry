@@ -5,11 +5,8 @@ var newCheckTable = $(".new_check_table");
 var newCheckTypeSelector = $(".new_check_table select[name=check_type]");
 
 function showSelectedType(selectElement) {
-  log(this);
   selectElement = $(selectElement || this);
   selectedType = selectElement.val();
-  log(selectedType);
-
   newCheckTable.find('tr.check_specific').hide();
   newCheckTable.find('tr.check_specific.' + selectedType).show();
 }
@@ -45,7 +42,7 @@ newCheckTypeSelector.change(function(event) {
       td do
         select :name => "check_type" do
           check_classes.each do |check_class|
-            check_type = check_class.to_s
+            check_type = check_class.to_s # todo: put this into Check
             option check_type, :value => check_type
           end
         end
@@ -53,10 +50,17 @@ newCheckTypeSelector.change(function(event) {
     end
   end
 
+  def check_specific_row(check_class)
+    check_type = check_class.to_s # todo: put this into Check
+    tr :class => ["check_specific", check_type] do
+      yield
+    end
+
+  end
+
   def description_row(check_class)
     if check_class.description
-      check_type = check_class.to_s # todo: put this into Check
-      tr :class => ["check_specific", check_type] do
+      check_specific_row(check_class) do
         th "description"
         td check_class.description
       end
@@ -65,7 +69,7 @@ newCheckTypeSelector.change(function(event) {
 
   def params_row(check_class)
     check_type = check_class.to_s # todo: put this into Check
-    tr :class => ["check_specific", check_type] do
+    check_specific_row(check_class) do
       th "params"
       td do
         table :class => "#{check_type}_params" do

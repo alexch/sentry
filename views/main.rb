@@ -74,9 +74,16 @@ function log(message){
 }
   SCRIPT
 
+  include Environment
+
   def head_content
     super
-    script :src => "http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"
+    case environment
+      when "development", "test"
+        script :src => "/jquery-1.4.2.min.js"
+      else
+        script :src => "http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"
+    end
   end
 
   def inline_scripts
