@@ -5,6 +5,7 @@ stop a checker
 "run now" button
 autorefresh
 All this stuff: https://www.cloudkick.com/features :-)
+and this: https://circonus.com
 check history (more than 5 most recent checks)
 graphs
 better notification algorithms, e.g.

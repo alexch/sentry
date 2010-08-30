@@ -32,7 +32,7 @@ class SentryApp < Sinatra::Base
   end
 
   get "/" do
-    checks = Check.all(:order => [:created_at.desc])
+    checks = Check.all(:order => [:created_at.desc], :limit => 1000)
     Main.new(:checks => checks).to_pretty
   end
 
